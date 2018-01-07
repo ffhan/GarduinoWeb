@@ -28,6 +28,18 @@ namespace Garduino.Controllers.api
             return _context.Measure;
         }
 
+        [HttpGet("{dateTime}")]
+        public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var measure = await _context.Measure.SingleOrDefaultAsync(m => m.DateTime == dateTime);
+
+            if (measure == null) return NotFound();
+
+            return Ok(measure);
+        }
+
         // GET: api/Entry/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMeasure([FromRoute] Guid id)
