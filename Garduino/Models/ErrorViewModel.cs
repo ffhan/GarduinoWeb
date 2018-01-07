@@ -1,5 +1,3 @@
-using System;
-
 namespace Garduino.Models
 {
     public class ErrorViewModel

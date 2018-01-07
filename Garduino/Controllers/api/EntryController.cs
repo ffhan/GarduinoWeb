@@ -5,19 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Garduino.Data;
 using Garduino.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Garduino.Controllers.api
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/Entry")]
     public class EntryController : Controller
     {
-        private readonly MeasureContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EntryController(MeasureContext context)
+        public EntryController(ApplicationDbContext context)
         {
             _context = context;
         }

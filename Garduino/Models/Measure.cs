@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Garduino.Models
 {
@@ -45,6 +43,19 @@ namespace Garduino.Models
                    DateTime == other.DateTime;
         }
 
+        public override int GetHashCode()
+        {
+            var hashCode = 1957286377;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(Id);
+            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
+            hashCode = hashCode * -1521134295 + SoilMoisture.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(SoilDescription);
+            hashCode = hashCode * -1521134295 + AirHumidity.GetHashCode();
+            hashCode = hashCode * -1521134295 + AirTemperature.GetHashCode();
+            hashCode = hashCode * -1521134295 + LightState.GetHashCode();
+            return hashCode;
+        }
+
         public static bool operator ==(Measure measure1, Measure measure2)
         {
             return EqualityComparer<Measure>.Default.Equals(measure1, measure2);
@@ -54,5 +65,7 @@ namespace Garduino.Models
         {
             return !(measure1 == measure2);
         }
+
+
     }
 }
