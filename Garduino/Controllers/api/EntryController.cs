@@ -14,18 +14,18 @@ namespace Garduino.Controllers.api
     [Route("api/Entry")]
     public class EntryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEntryRepository _repository;
 
-        public EntryController(ApplicationDbContext context)
+        public EntryController(IEntryRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Entry
         [HttpGet]
         public IEnumerable<Measure> GetMeasure()
         {
-            return _context.Measure;
+            return _repository.GetAll();
         }
 
         [HttpGet("{dateTime}")]
@@ -33,9 +33,17 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var measure = await _context.Measure.SingleOrDefaultAsync(m => m.DateTime == dateTime);
+            var measure = await _repository.GetAsync(dateTime);
 
-            if (measure == null) return NotFound();
+            try
+            {
+                if (measure is null) return NotFound();
+            }
+            catch (Exception e)
+            {
+                return NotFound();
+            }
+            
 
             return Ok(measure);
         }
@@ -45,7 +53,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var measure = await _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0).ToListAsync();
+            var measure = await _repository.GetRangeAsync(dateTime1, dateTime2);
 
             if (measure == null) return NotFound();
 
@@ -61,7 +69,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var measure = await _context.Measure.SingleOrDefaultAsync(m => m.Id == id);
+            var measure = await _repository.GetAsync(id);
 
             if (measure == null)
             {
@@ -76,65 +84,20 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Measure mes = _context.Measure.FirstOrDefault(g => g.DateTime == measure.DateTime);
+            Guid id = await _repository.GetId(measure);
 
-            if (mes is null) return BadRequest();
-
-            measure.Id = mes.Id;
-
-            _context.Entry(measure).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MeasureExists(measure.DateTime))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            if (!await _repository.UpdateAsync(id, measure)) return NoContent();
+            return Ok();
         }
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMeasure([FromRoute] Guid id, [FromBody] Measure measure)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != measure.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(measure).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MeasureExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            if (!await _repository.UpdateAsync(id, measure)) return NoContent();
+            return Ok();
         }
 
         // POST: api/Entry
@@ -146,13 +109,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (_context.Measure.FirstOrDefault(g => g.DateTime.Equals(measure.DateTime)) is null)
-            {
-                _context.Measure.Add(measure);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetMeasure", new { id = measure.Id }, measure);
-            }
+            if (await _repository.AddAsync(measure)) return Ok();
             return BadRequest();
         }
 
@@ -165,26 +122,23 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var measure = await _context.Measure.SingleOrDefaultAsync(m => m.Id == id);
-            if (measure == null)
-            {
-                return NotFound();
-            }
-
-            _context.Measure.Remove(measure);
-            await _context.SaveChangesAsync();
-
-            return Ok(measure);
+            if (await _repository.DeleteAsync(id)) return Ok(await _repository.GetAsync(id));
+            return BadRequest();
         }
 
-        private bool MeasureExists(DateTime dateTime)
+        [HttpGet("cmp/{dateTime1}&{dateTime2}")]
+        public async Task<IActionResult> Compare(DateTime dateTime1, DateTime dateTime2)
         {
-            return _context.Measure.Any(g => g.DateTime == dateTime);
+            if (await _repository.GetAsync(dateTime1) == await _repository.GetAsync(dateTime2)) return Ok();
+            return BadRequest();
         }
 
-        private bool MeasureExists(Guid id)
+        [HttpDelete("all")]
+        public async Task<IActionResult> DeleteAll()
         {
-            return _context.Measure.Any(e => e.Id == id);
+            if(await _repository.DeleteAllAsync()) return Ok();
+            return BadRequest();
         }
+
     }
 }

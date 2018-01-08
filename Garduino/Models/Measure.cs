@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Garduino.Models
-{
+{// TODO: ADD USER ID & INCLUDE IT IN EQUALS
     public class Measure : IEquatable<Measure>
     {
 
@@ -40,24 +40,40 @@ namespace Garduino.Models
         public bool Equals(Measure other)
         {
             return other != null &&
-                   DateTime == other.DateTime;
+                   DateTime.Equals(other.DateTime);
         }
 
         public override int GetHashCode()
         {
-            return 2108858624 + EqualityComparer<Guid>.Default.GetHashCode(Id);
+            return -10323184 + DateTime.GetHashCode();
+        }
+
+        public void Update(Measure measure)
+        {
+            DateTime = measure.DateTime;
+            SoilMoisture = measure.SoilMoisture;
+            SoilDescription = measure.SoilDescription;
+            AirHumidity = measure.AirHumidity;
+            AirTemperature = measure.AirTemperature;
+            LightState = measure.LightState;
         }
 
         public static bool operator ==(Measure measure1, Measure measure2)
         {
-            return EqualityComparer<Measure>.Default.Equals(measure1, measure2);
+            try
+            {
+                if (measure1 is null) return false;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return measure1.Equals(measure2);
         }
 
         public static bool operator !=(Measure measure1, Measure measure2)
         {
             return !(measure1 == measure2);
         }
-
-
     }
 }

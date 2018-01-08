@@ -31,6 +31,7 @@ namespace Garduino
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEntryRepository, EntryRepository>();
 
             services.AddMvc();
 

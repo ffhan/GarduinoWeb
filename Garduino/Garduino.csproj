@@ -29,6 +29,7 @@
     <PackageReference Include="Serilog.Sinks.Email" Version="2.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServerCore" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />
   </ItemGroup>
 
   <ItemGroup>
