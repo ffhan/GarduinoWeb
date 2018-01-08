@@ -45,15 +45,7 @@ namespace Garduino.Models
 
         public override int GetHashCode()
         {
-            var hashCode = 1957286377;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(Id);
-            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + SoilMoisture.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(SoilDescription);
-            hashCode = hashCode * -1521134295 + AirHumidity.GetHashCode();
-            hashCode = hashCode * -1521134295 + AirTemperature.GetHashCode();
-            hashCode = hashCode * -1521134295 + LightState.GetHashCode();
-            return hashCode;
+            return 2108858624 + EqualityComparer<Guid>.Default.GetHashCode(Id);
         }
 
         public static bool operator ==(Measure measure1, Measure measure2)
