@@ -20,5 +20,7 @@ namespace Garduino.Data
         }
 
         public DbSet<Garduino.Models.Measure> Measure { get; set; }
+
+        public DbSet<Garduino.Models.Code> Code { get; set; }
     }
 }

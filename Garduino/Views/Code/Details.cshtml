@@ -1,0 +1,48 @@
+﻿@model Garduino.Models.Code
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Code</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Action)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Action)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DateArrived)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DateArrived)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DateCompleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DateCompleted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DateExecuted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DateExecuted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsCompleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsCompleted)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
