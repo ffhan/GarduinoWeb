@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Garduino.Data;
 using Garduino.Models;
+using Controller = Microsoft.AspNetCore.Mvc.Controller;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Garduino.Controllers.api
 {
+    [Authorize]//TODO: FIX AUTHORIZATION
     [Produces("application/json")]
-    [Route("api/Entry")]
+    [Microsoft.AspNetCore.Mvc.Route("api/Entry")]
     public class EntryController : Controller
     {
         private readonly IEntryRepository _repository;
@@ -22,13 +23,13 @@ namespace Garduino.Controllers.api
         }
 
         // GET: api/Entry
-        [HttpGet]
+        [Microsoft.AspNetCore.Mvc.HttpGet]
         public IEnumerable<Measure> GetMeasure()
         {
             return _repository.GetAll();
         }
 
-        [HttpGet("{dateTime}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{dateTime}")]
         public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -48,7 +49,7 @@ namespace Garduino.Controllers.api
             return Ok(measure);
         }
 
-        [HttpGet("{dateTime1}&{dateTime2}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{dateTime1}&{dateTime2}")]
         public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime1, DateTime dateTime2)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -61,7 +62,7 @@ namespace Garduino.Controllers.api
         }
 
         // GET: api/Entry/5
-        [HttpGet("{id}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
         public async Task<IActionResult> GetMeasure([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -79,7 +80,7 @@ namespace Garduino.Controllers.api
             return Ok(measure);
         }
 
-        [HttpPut]
+        [Microsoft.AspNetCore.Mvc.HttpPut]
         public async Task<IActionResult> PutMeasure([FromBody] Measure measure)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -91,7 +92,7 @@ namespace Garduino.Controllers.api
         }
 
         // PUT: api/Entry/5
-        [HttpPut("{id}")]
+        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
         public async Task<IActionResult> PutMeasure([FromRoute] Guid id, [FromBody] Measure measure)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -101,7 +102,7 @@ namespace Garduino.Controllers.api
         }
 
         // POST: api/Entry
-        [HttpPost]
+        [Microsoft.AspNetCore.Mvc.HttpPost]
         public async Task<IActionResult> PostMeasure([FromBody] Measure measure)
         {
             if (!ModelState.IsValid)
@@ -114,7 +115,7 @@ namespace Garduino.Controllers.api
         }
 
         // DELETE: api/Entry/5
-        [HttpDelete("{id}")]
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeasure([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -126,14 +127,14 @@ namespace Garduino.Controllers.api
             return BadRequest();
         }
 
-        [HttpGet("cmp/{dateTime1}&{dateTime2}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("cmp/{dateTime1}&{dateTime2}")]
         public async Task<IActionResult> Compare(DateTime dateTime1, DateTime dateTime2)
         {
             if (await _repository.GetAsync(dateTime1) == await _repository.GetAsync(dateTime2)) return Ok();
             return BadRequest();
         }
 
-        [HttpDelete("all")]
+        [Microsoft.AspNetCore.Mvc.HttpDelete("all")]
         public async Task<IActionResult> DeleteAll()
         {
             if(await _repository.DeleteAllAsync()) return Ok();

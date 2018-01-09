@@ -32,7 +32,7 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
-        public bool EqualsEF(Measure measure)
+        public bool EqualsEf(Measure measure)
         {
             return Equals(measure);
         }

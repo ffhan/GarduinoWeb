@@ -79,7 +79,7 @@ namespace Garduino.Data
 
         public async Task<bool> ContainsAsync(Measure measure)
         {
-            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEF(measure));
+            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEf(measure));
             return !(tmp is null);
         }
 

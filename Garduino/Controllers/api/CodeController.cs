@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garduino.Data;
 using Garduino.Models;
+using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
 namespace Garduino.Controllers.api
 {
+    [Authorize]
+    [Produces("application/json")]
+    [Microsoft.AspNetCore.Mvc.Route("api/Code")]
     public class CodeController : Controller
-    {   //TODO: Create CodeRepository
+    {
         private readonly ApplicationDbContext _context;
 
         public CodeController(ApplicationDbContext context)
@@ -19,131 +24,101 @@ namespace Garduino.Controllers.api
             _context = context;
         }
 
-        // GET: Code
-        public async Task<IActionResult> Index()
+        // GET: api/Code
+        [Microsoft.AspNetCore.Mvc.HttpGet]
+        public IEnumerable<Code> GetCode()
         {
-            return View(await _context.Code.ToListAsync());
+            return _context.Code;
         }
 
-        // GET: Code/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        // GET: api/Code/5
+        [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
+        public async Task<IActionResult> GetCode([FromRoute] Guid id)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
-            }
-
-            var code = await _context.Code
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (code == null)
-            {
-                return NotFound();
-            }
-
-            return View(code);
-        }
-
-        // GET: Code/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Code/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Action,DateArrived,DateCompleted,DateExecuted,IsCompleted")] Code code)
-        {
-            if (ModelState.IsValid)
-            {
-                code.Id = Guid.NewGuid();
-                _context.Add(code);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(code);
-        }
-
-        // GET: Code/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
             var code = await _context.Code.SingleOrDefaultAsync(m => m.Id == id);
+
             if (code == null)
             {
                 return NotFound();
             }
-            return View(code);
+
+            return Ok(code);
         }
 
-        // POST: Code/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Action,DateArrived,DateCompleted,DateExecuted,IsCompleted")] Code code)
+        // PUT: api/Code/5
+        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
+        public async Task<IActionResult> PutCode([FromRoute] Guid id, [FromBody] Code code)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (id != code.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(code).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(code);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CodeExists(code.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(code);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CodeExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Code/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // POST: api/Code
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        public async Task<IActionResult> PostCode([FromBody] Code code)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var code = await _context.Code
-                .SingleOrDefaultAsync(m => m.Id == id);
+            _context.Code.Add(code);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetCode", new { id = code.Id }, code);
+        }
+
+        // DELETE: api/Code/5
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCode([FromRoute] Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var code = await _context.Code.SingleOrDefaultAsync(m => m.Id == id);
             if (code == null)
             {
                 return NotFound();
             }
 
-            return View(code);
-        }
-
-        // POST: Code/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var code = await _context.Code.SingleOrDefaultAsync(m => m.Id == id);
             _context.Code.Remove(code);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Ok(code);
         }
 
         private bool CodeExists(Guid id)
