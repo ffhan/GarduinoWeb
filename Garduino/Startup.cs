@@ -30,6 +30,12 @@ namespace Garduino
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthorization();
+
+            services.AddMvcCore()
+                .AddAuthorization() // Note - this is on the IMvcBuilder, not the service collection
+                .AddJsonFormatters(options => options.ContractResolver = new CamelCasePropertyNamesContractResolver());
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -41,8 +47,31 @@ namespace Garduino
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEntryRepository, EntryRepository>();
 
-            services.AddAuthorization(options => { options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build(); });
+            services.AddAuthentication()
+                .AddCookie(cfg => cfg.SlidingExpiration = true)
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.RequireHttpsMetadata = false;
+                    cfg.SaveToken = true;
 
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = Configuration["JwtIssuer"],
+                        ValidAudience = Configuration["JwtIssuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
+                    };
+                    /*
+                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["Tokens:Issuer"],
+                        ValidAudience = Configuration["Tokens:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
+                    };
+                    */
+                });
+
+            /*
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
             services
                 .AddAuthentication(options =>
@@ -64,9 +93,8 @@ namespace Garduino
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
-            /*services.AddMvcCore()
-                .AddAuthorization() // Note - this is on the IMvcBuilder, not the service collection
-                .AddJsonFormatters(options => options.ContractResolver = new CamelCasePropertyNamesContractResolver());*/
+                */
+
             services.AddMvc();
 
         }
