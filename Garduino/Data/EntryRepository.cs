@@ -17,7 +17,7 @@ namespace Garduino.Data
         }
 
         public async Task<bool> AddAsync(Measure measure)
-        {// TODO: FIX ADDSYNC
+        {
             bool tmp = await ContainsAsync(measure);
             if (!tmp)
             {
@@ -79,8 +79,7 @@ namespace Garduino.Data
 
         public async Task<bool> ContainsAsync(Measure measure)
         {
-            var mes = _context.Measure.Where(g => g.Equals(measure));
-            Measure tmp = _context.Measure.FirstOrDefault(g => g.Equals(measure));
+            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEF(measure));
             return !(tmp is null);
         }
 

@@ -32,6 +32,11 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
+        public bool EqualsEF(Measure measure)
+        {
+            return Equals(measure);
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Measure);
@@ -39,8 +44,16 @@ namespace Garduino.Models
 
         public bool Equals(Measure other)
         {
-            return other != null &&
-                   DateTime.Equals(other.DateTime);
+            try
+            {
+                return other != null &&
+                       DateTime.Equals(other.DateTime);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
         }
 
         public override int GetHashCode()

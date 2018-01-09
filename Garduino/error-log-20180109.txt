@@ -267,3 +267,45 @@ System.NullReferenceException: Object reference not set to an instance of an obj
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.<Invoke>d__7.MoveNext()
+2018-01-09 11:53:11.368 +01:00 [Error] An exception occurred in the database while iterating the results of a query for context type '"Garduino.Data.ApplicationDbContext"'."
+""System.NullReferenceException: Object reference not set to an instance of an object.
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.op_Equality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 76
+   at Garduino.Models.Measure.op_Inequality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 81
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.EqualsEF(Measure measure) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 37
+   at lambda_method(Closure , Measure )
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.<_TrackEntities>d__17`2.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.ExceptionInterceptor`1.EnumeratorExceptionInterceptor.MoveNext()"
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.op_Equality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 76
+   at Garduino.Models.Measure.op_Inequality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 81
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.EqualsEF(Measure measure) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 37
+   at lambda_method(Closure , Measure )
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.<_TrackEntities>d__17`2.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.ExceptionInterceptor`1.EnumeratorExceptionInterceptor.MoveNext()
+2018-01-09 11:53:11.475 +01:00 [Error] An exception occurred in the database while iterating the results of a query for context type '"Garduino.Data.ApplicationDbContext"'."
+""System.NullReferenceException: Object reference not set to an instance of an object.
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.op_Equality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 76
+   at Garduino.Models.Measure.op_Inequality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 81
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.EqualsEF(Measure measure) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 37
+   at lambda_method(Closure , Measure )
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.<_TrackEntities>d__17`2.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.ExceptionInterceptor`1.EnumeratorExceptionInterceptor.MoveNext()"
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.op_Equality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 76
+   at Garduino.Models.Measure.op_Inequality(Measure measure1, Measure measure2) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 81
+   at Garduino.Models.Measure.Equals(Measure other) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 47
+   at Garduino.Models.Measure.EqualsEF(Measure measure) in D:\Workspaces\Visual Studio\repos\GarduinoWeb\Garduino\Models\Measure.cs:line 37
+   at lambda_method(Closure , Measure )
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.<_TrackEntities>d__17`2.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.Internal.LinqOperatorProvider.ExceptionInterceptor`1.EnumeratorExceptionInterceptor.MoveNext()
