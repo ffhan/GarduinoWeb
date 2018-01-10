@@ -10,18 +10,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] //TODO: Include user id in models.
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [Route("api/Entry")]
     public class EntryController : Controller
     {
-        private readonly IEntryRepository _repository;
+        private readonly IRepository<Measure> _repository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EntryController(IEntryRepository repository, UserManager<ApplicationUser> userManager)
+        public EntryController(IRepository<Measure> repository, UserManager<ApplicationUser> userManager)
         {
             _repository = repository;
             _userManager = userManager;
@@ -40,7 +41,7 @@ namespace Garduino.Controllers.api
             return _repository.GetDevice(device, await GetCurrentUserIdAsync());
         }
 
-        [HttpGet("{dateTime}")]
+        [HttpGet("date={dateTime}")]
         public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -60,7 +61,7 @@ namespace Garduino.Controllers.api
             return Ok(measure);
         }
 
-        [HttpGet("{dateTime1}&{dateTime2}")]
+        [HttpGet("cmp={dateTime1}&{dateTime2}")]
         public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime1, DateTime dateTime2)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -73,7 +74,7 @@ namespace Garduino.Controllers.api
         }
 
         // GET: api/Entry/5
-        [HttpGet("{id}")]
+        [HttpGet("id={id}")]
         public async Task<IActionResult> GetMeasure([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -147,7 +148,7 @@ namespace Garduino.Controllers.api
             return BadRequest();
         }
 
-        [HttpDelete("all")]
+        [HttpDelete("deleteall")] //ONLY FOR DEVELOPMENT!
         public async Task<IActionResult> DeleteAll()
         {
             if(await _repository.DeleteAllAsync()) return Ok();
@@ -156,7 +157,7 @@ namespace Garduino.Controllers.api
 
         private async Task<string> GetCurrentUserIdAsync()
         {
-            var userId = _userManager.Users.FirstOrDefault(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             return userId?.Id;
         }
     }

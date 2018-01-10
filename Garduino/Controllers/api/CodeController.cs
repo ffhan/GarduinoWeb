@@ -1,38 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Garduino.Data;
 using Garduino.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
-    [Microsoft.AspNetCore.Mvc.Route("api/Code")]
+    [Route("api/Code")]
     public class CodeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICodeRepository _repository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CodeController(ApplicationDbContext context)
+        public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _repository = repository;
+            _userManager = userManager;
         }
 
         // GET: api/Code
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        public IEnumerable<Code> GetCode()
+        [HttpGet("all")]
+        public async Task<IEnumerable<Code>> GetCode()
         {
-            return _context.Code;
+            var t = _repository.GetAll(await GetCurrentUserIdAsync());
+            return t;
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<Code>> GetActiveCode()
+        {
+            return _repository.GetActive(await GetCurrentUserIdAsync());
+        }
+
+        [HttpPost("complete")]
+        public async Task Complete([FromBody] DateTime dateTime) //TODO: Complete & Fix.
+        {
+            _repository.GetLatest(await GetCurrentUserIdAsync()).Complete(dateTime);
+        }
+
+
         // GET: api/Code/5
-        [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
+        [HttpGet("id={id}")]
         public async Task<IActionResult> GetCode([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -40,7 +58,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var code = await _context.Code.SingleOrDefaultAsync(m => m.Id == id);
+            Code code = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
 
             if (code == null)
             {
@@ -51,42 +69,17 @@ namespace Garduino.Controllers.api
         }
 
         // PUT: api/Code/5
-        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutCode([FromRoute] Guid id, [FromBody] Code code)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != code.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(code).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CodeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            if (!await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync())) return NoContent();
+            return Ok();
         }
 
         // POST: api/Code
-        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [HttpPost]
         public async Task<IActionResult> PostCode([FromBody] Code code)
         {
             if (!ModelState.IsValid)
@@ -94,14 +87,12 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            _context.Code.Add(code);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCode", new { id = code.Id }, code);
+            if (await _repository.AddAsync(code, await GetCurrentUserIdAsync())) return Ok();
+            return BadRequest();
         }
 
         // DELETE: api/Code/5
-        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCode([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -109,21 +100,22 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var code = await _context.Code.SingleOrDefaultAsync(m => m.Id == id);
-            if (code == null)
-            {
-                return NotFound();
-            }
-
-            _context.Code.Remove(code);
-            await _context.SaveChangesAsync();
-
-            return Ok(code);
+            if (await _repository.DeleteAsync(id, await GetCurrentUserIdAsync())) return Ok(await _repository.GetAsync(id,
+                await GetCurrentUserIdAsync()));
+            return BadRequest();
         }
 
-        private bool CodeExists(Guid id)
+        [HttpDelete("deleteall")] //ONLY FOR DEVELOPMENT!
+        public async Task<IActionResult> DeleteAll()
         {
-            return _context.Code.Any(e => e.Id == id);
+            if (await _repository.DeleteAllAsync()) return Ok();
+            return BadRequest();
+        }
+
+        private async Task<string> GetCurrentUserIdAsync()
+        {
+            var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            return userId?.Id;
         }
     }
 }

@@ -7,38 +7,66 @@ using System.Threading.Tasks;
 
 namespace Garduino.Models
 {
-    public class Code
+    public class Code : IComparable<Code>
     {
         [Key]
+        [DisplayName("ID")]
         public Guid Id { get; set; }
 
         [Required]
+        [DisplayName("Action")]
         public int Action { get; set; }
 
-        [Required]
+        [DisplayName("Action name")]
+        [DefaultValue("No name")]
+        public string ActionName { get; set; }
+
         [DisplayName("Date arrived")]
         public DateTime DateArrived { get; set; }
 
-        [Required]
         [DisplayName("Date completed")]
         public DateTime DateCompleted { get; set; }
 
         [DisplayName("Date executed")]
         public DateTime DateExecuted { get; set; }
 
-        [Required]
         [DisplayName("Is it completed?")]
         public bool IsCompleted { get; set; }
 
+        public string UserId { get; set; }
+
         [Required]
-        public Guid UserId { get; set; }
+        public string DeviceName { get; set; }
 
-        public void SetUser(Guid id) => UserId = id;
+        public void SetUser(string id) => UserId = id;
 
-        public void Complete()
+        public void Complete(DateTime dateExecuted)
         {
             IsCompleted = true;
+            DateExecuted = dateExecuted;
             DateCompleted = DateTime.Now;
+        }
+
+        public void Update(Code code)
+        {
+            Action = code.Action;
+            ActionName = code.ActionName;
+
+        }
+
+        public bool IsFromDevice(string device)
+        {
+            return DeviceName.ToUpper().Equals(device.ToUpper());
+        }
+
+        public Code() { }
+
+
+        public int CompareTo(Code other)
+        {
+            if (!(IsCompleted ^ other.IsCompleted)) return DateArrived.CompareTo(other.DateArrived);
+            if (other.IsCompleted) return -1;
+            return 1;
         }
     }
 }

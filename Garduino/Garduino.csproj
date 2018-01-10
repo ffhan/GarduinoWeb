@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-Garduino-24B3E3BC-ABE6-406B-8905-AF70A55129E5</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20180110201214_CodeUpdate.cs" />
+    <Compile Remove="Data\Migrations\20180110201214_CodeUpdate.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="3.3.7" />

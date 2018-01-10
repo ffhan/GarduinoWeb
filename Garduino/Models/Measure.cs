@@ -66,7 +66,6 @@ namespace Garduino.Models
 
         public void Update(Measure measure) //TODO: Update only if field not null.
         {
-            DateTime = measure.DateTime;
             SoilMoisture = measure.SoilMoisture;
             SoilDescription = measure.SoilDescription;
             AirHumidity = measure.AirHumidity;

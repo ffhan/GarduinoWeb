@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Garduino.Data;
+using Garduino.Data.Migrations;
 using Garduino.Models;
 using Garduino.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,7 +47,8 @@ namespace Garduino
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IEntryRepository, EntryRepository>();
+            services.AddTransient<IRepository<Measure>, EntryRepository>();
+            services.AddTransient<ICodeRepository, CodeRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

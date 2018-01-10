@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Data
 {
-    public class EntryRepository : IEntryRepository
+    public class EntryRepository : IRepository<Measure>
     {
         private readonly ApplicationDbContext _context;
 
@@ -56,8 +56,8 @@ namespace Garduino.Data
 
         public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
         {// TODO: IMPLEMENT COMPARATOR!
-            return await _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
-            && m.UserId.Equals(userId)).ToArrayAsync();
+            return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
+            && m.UserId.Equals(userId));
         }
 
         public async Task<bool> UpdateAsync(Guid id, Measure measure, string userId)
@@ -86,8 +86,7 @@ namespace Garduino.Data
 
         public async Task<bool> ContainsAsync(Measure measure, string userId)
         {
-            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
-            return !(tmp is null);
+            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
         }
 
         public async Task<bool> DeleteAsync(Guid id, string userId)
@@ -112,14 +111,26 @@ namespace Garduino.Data
 
         public bool AreEqual(Measure m1, Measure m2)
         {
-            
             return m1.Equals(m2);
         }
 
         public async Task<bool> DeleteAllAsync()
         {
-            await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
+            try
+            {
+                await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
             return true;
+        }
+
+        public Measure GetLatest(string userId)
+        {
+            return GetAll(userId).FirstOrDefault();
         }
     }
 }
