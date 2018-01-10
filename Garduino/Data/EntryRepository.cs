@@ -34,6 +34,11 @@ namespace Garduino.Data
             return _context.Measure.Where(g => g.UserId.Equals(userId)).OrderByDescending(g => g.DateTime);
         }
 
+        public IEnumerable<Measure> GetDevice(string device, string userId)
+        {
+            return _context.Measure.Where(g => g.IsFromDevice(device) && g.UserId.Equals(userId));
+        }
+
         public async Task<Measure> GetAsync(Measure measure, string userId)
         {
             return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.UserId.Equals(userId));

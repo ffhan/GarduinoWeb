@@ -34,9 +34,11 @@ namespace Garduino.Models
 
         public string UserId { get; set; }
 
-        public void SetUser(string id) => UserId = id;
+        [Required]
+        [MinLength(4)]
+        public string DeviceName { get; set; }
 
-        
+        public void SetUser(string id) => UserId = id;
 
         public bool EqualsEf(Measure measure)
         {
@@ -53,7 +55,7 @@ namespace Garduino.Models
            try
            {
                return other != null &&
-                      DateTime.Equals(other.DateTime);
+                      DateTime.Equals(other.DateTime) && IsFromDevice(other.DeviceName);
            }
            catch (Exception e)
            {
@@ -62,7 +64,7 @@ namespace Garduino.Models
 
         }
 
-        public void Update(Measure measure)
+        public void Update(Measure measure) //TODO: Update only if field not null.
         {
             DateTime = measure.DateTime;
             SoilMoisture = measure.SoilMoisture;
@@ -70,15 +72,10 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
+            //DeviceName = measure.DeviceName;
         }
 
-        public override int GetHashCode()
-        {
-            var hashCode = 1073692751;
-            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UserId);
-            return hashCode;
-        }
+        
 
         public static bool operator ==(Measure measure1, Measure measure2)
         {
@@ -98,5 +95,18 @@ namespace Garduino.Models
             return !(measure1 == measure2);
         }
 
+        public bool IsFromDevice(string device)
+        {
+            return DeviceName.ToUpper().Equals(device.ToUpper());
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1004238049;
+            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UserId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceName);
+            return hashCode;
+        }
     }
 }

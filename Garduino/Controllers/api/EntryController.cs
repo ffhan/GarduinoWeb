@@ -34,6 +34,12 @@ namespace Garduino.Controllers.api
             return _repository.GetAll(await GetCurrentUserIdAsync());
         }
 
+        [HttpGet("device={device}")]
+        public async Task<IEnumerable<Measure>> GetMeasure([FromRoute] string device)
+        {
+            return _repository.GetDevice(device, await GetCurrentUserIdAsync());
+        }
+
         [HttpGet("{dateTime}")]
         public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime)
         {

@@ -10,6 +10,7 @@ namespace Garduino.Data
     {
         Task<bool> AddAsync(Measure measure, string userId);
         IEnumerable<Measure> GetAll(string userId);
+        IEnumerable<Measure> GetDevice(string device, string userId);
         Task<Measure> GetAsync(Guid id, string userId);
         Task<Measure> GetAsync(DateTime dateTime, string userId);
         Task<Measure> GetAsync(Measure measure, string userId);
