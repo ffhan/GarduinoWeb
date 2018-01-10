@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Garduino.Models
-{// TODO: Add device name
+namespace GarduinoAPI.Models
+{// TODO: ADD USER ID & INCLUDE IT IN EQUALS
     public class Measure : IEquatable<Measure>
     {
 
@@ -32,12 +32,18 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
-        public string UserId { get; set; }
+        [Required]
+        private Guid UserId { get; set; }
 
-        public void SetUser(string id) => UserId = id;
+        public void SetUser(Guid id) => UserId = id;
 
-        
-
+        public override int GetHashCode()
+        {
+            var hashCode = 1073692751;
+            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(UserId);
+            return hashCode;
+        }
         public bool EqualsEf(Measure measure)
         {
            return Equals(measure);
@@ -70,14 +76,6 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = 1073692751;
-            hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UserId);
-            return hashCode;
         }
 
         public static bool operator ==(Measure measure1, Measure measure2)

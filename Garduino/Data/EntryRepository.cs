@@ -16,9 +16,10 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Measure measure)
+        public async Task<bool> AddAsync(Measure measure, string userId)
         {
-            bool tmp = await ContainsAsync(measure);
+            measure.SetUser(userId);
+            bool tmp = await ContainsAsync(measure, userId);
             if (!tmp)
             {
                 _context.Measure.Add(measure);
@@ -28,34 +29,35 @@ namespace Garduino.Data
             return false;
         }
 
-        public IEnumerable<Measure> GetAll()
+        public IEnumerable<Measure> GetAll(string userId)
         {
-            return _context.Measure.OrderByDescending(g => g.DateTime);
+            return _context.Measure.Where(g => g.UserId.Equals(userId)).OrderByDescending(g => g.DateTime);
         }
 
-        public async Task<Measure> GetAsync(Measure measure)
+        public async Task<Measure> GetAsync(Measure measure, string userId)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure));
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.UserId.Equals(userId));
         }
-        public async Task<Measure> GetAsync(Guid id)
+        public async Task<Measure> GetAsync(Guid id, string userId)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id);
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && g.UserId.Equals(userId));
         }
 
-        public async Task<Measure> GetAsync(DateTime dateTime)
+        public async Task<Measure> GetAsync(DateTime dateTime, string userId)
         {
-            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime));
+            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && g.UserId.Equals(userId));
             return tmp;
         }
 
-        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2)
+        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
         {// TODO: IMPLEMENT COMPARATOR!
-            return await _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0).ToArrayAsync();
+            return await _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
+            && m.UserId.Equals(userId)).ToArrayAsync();
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Measure measure)
+        public async Task<bool> UpdateAsync(Guid id, Measure measure, string userId)
         {
-            Measure mes = await GetAsync(id);
+            Measure mes = await GetAsync(id, userId);
             if (mes is null) return false;
             mes.Update(measure);
             _context.Entry(mes).State = EntityState.Modified;
@@ -65,7 +67,7 @@ namespace Garduino.Data
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await ContainsAsync(mes))
+                if (!await ContainsAsync(mes, userId))
                 {
                     return false;
                 }
@@ -77,17 +79,17 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Measure measure)
+        public async Task<bool> ContainsAsync(Measure measure, string userId)
         {
-            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEf(measure));
+            Measure tmp = _context.Measure.FirstOrDefault(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
             return !(tmp is null);
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id, string userId)
         {
-            _context.Measure.Remove(await GetAsync(id));
             try
             {
+                _context.Measure.Remove(await GetAsync(id, userId));
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -97,9 +99,9 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Measure measure)
+        public async Task<Guid> GetId(Measure measure, string userId)
         {
-            Measure mes = await GetAsync(measure.DateTime);
+            Measure mes = await GetAsync(measure.DateTime, userId);
             return mes.Id;
         }
 
@@ -111,9 +113,8 @@ namespace Garduino.Data
 
         public async Task<bool> DeleteAllAsync()
         {
-            int tmp = await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
-            if (tmp == 0) return true;
-            return false;
+            await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
+            return true;
         }
     }
 }

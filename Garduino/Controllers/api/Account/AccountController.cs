@@ -64,7 +64,7 @@ namespace Garduino.Controllers.api.Account
                 return await GenerateJwtToken(model.Email, user);
             }
 
-            throw new ApplicationException("UNKNOWN_ERROR");
+            throw new ApplicationException(result.Errors.First().Description);
         }
 
         private async Task<object> GenerateJwtToken(string email, ApplicationUser user)
