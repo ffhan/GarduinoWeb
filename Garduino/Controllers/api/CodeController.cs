@@ -42,10 +42,19 @@ namespace Garduino.Controllers.api
             return _repository.GetActive(await GetCurrentUserIdAsync());
         }
 
-        [HttpPost("complete")]
-        public async Task Complete([FromBody] DateTime dateTime) //TODO: Complete & Fix.
+        [HttpGet("complete")]
+        public async Task<Code> GetLatestCode()
         {
-            _repository.GetLatest(await GetCurrentUserIdAsync()).Complete(dateTime);
+            return _repository.GetLatest(await GetCurrentUserIdAsync());
+        }
+
+        [HttpGet("complete={dateTime}")]
+        public async Task<IActionResult> CompleteCode([FromRoute] DateTime dateTime) //TODO: Complete & Fix.
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            Code latest = _repository.GetLatest(await GetCurrentUserIdAsync());
+            await _repository.Complete(latest, dateTime, await GetCurrentUserIdAsync());
+            return Ok();
         }
 
 

@@ -39,10 +39,16 @@ namespace Garduino.Data
 
         public Code GetLatest(string userId)
         {
-            return GetAll(userId).FirstOrDefault(g => g.IsCompleted);
+            return GetAll(userId)?.FirstOrDefault(g => !g.IsCompleted);
         }
 
         public IEnumerable<Code> GetActive(string userId) => _context.Code.Where(g => g.UserId.Equals(userId) && !g.IsCompleted).OrderByDescending(g => g);
+
+        public async Task Complete(Code code, DateTime dateExecuted, string userId)
+        {
+            code.Complete(dateExecuted);
+            await UpdateAsync(code.Id, code, userId);
+        }
 
         public async Task Complete(Guid id, DateTime dateExecuted, string userId)
         {

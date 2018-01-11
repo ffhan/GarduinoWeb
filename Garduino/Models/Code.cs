@@ -64,9 +64,9 @@ namespace Garduino.Models
 
         public int CompareTo(Code other)
         {
-            if (!(IsCompleted ^ other.IsCompleted)) return DateArrived.CompareTo(other.DateArrived);
-            if (other.IsCompleted) return -1;
-            return 1;
+            if (!(IsCompleted ^ other.IsCompleted)) return -DateArrived.CompareTo(other.DateArrived);
+            if (other.IsCompleted) return 1;
+            return -1;
         }
     }
 }

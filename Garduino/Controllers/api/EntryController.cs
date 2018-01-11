@@ -62,7 +62,7 @@ namespace Garduino.Controllers.api
         }
 
         [HttpGet("cmp={dateTime1}&{dateTime2}")]
-        public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime1, DateTime dateTime2)
+        public async Task<IActionResult> GetMeasure([FromRoute] DateTime dateTime1, [FromRoute] DateTime dateTime2)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
