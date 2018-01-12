@@ -132,5 +132,13 @@ namespace Garduino.Data
         {
             return GetAll(userId).FirstOrDefault();
         }
+
+        public async Task AddAllAsync(ISet<Measure> all, string userId)
+        {
+            foreach (var measure in all)
+            {
+                await AddAsync(measure, userId);
+            }
+        }
     }
 }

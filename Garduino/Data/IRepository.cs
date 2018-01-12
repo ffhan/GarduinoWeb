@@ -22,5 +22,6 @@ namespace Garduino.Data
         bool AreEqual(T m1, T m2);
         Task<bool> DeleteAllAsync();
         T GetLatest(string userId);
+        Task AddAllAsync(ISet<T> all, string userId);
     }
 }

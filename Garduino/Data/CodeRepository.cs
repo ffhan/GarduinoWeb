@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Data
 {
-    public class CodeRepository : ICodeRepository
-    {
+    public class CodeRepository : ICodeRepository //TODO: schedule codes
+    { //TODO: Register code for reuse, then use them like this.
         private readonly ApplicationDbContext _context;
 
         public CodeRepository(ApplicationDbContext context)
@@ -150,6 +150,14 @@ namespace Garduino.Data
             }
 
             return true;
+        }
+
+        public async Task AddAllAsync(ISet<Code> all, string userId)
+        {
+            foreach(var code in all)
+            {
+                await AddAsync(code, userId);
+            }
         }
     }
 }

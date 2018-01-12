@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Models.ViewModels;
 
 namespace Garduino.Models
 {
@@ -37,6 +38,13 @@ namespace Garduino.Models
 
         [Required]
         public string DeviceName { get; set; }
+
+        public Code(CodeViewModel codeViewModel)
+        {
+            ActionName = codeViewModel.ActionName;
+            Action = codeViewModel.Action;
+            DeviceName = codeViewModel.DeviceName;
+        }
 
         public void SetUser(string id) => UserId = id;
 
