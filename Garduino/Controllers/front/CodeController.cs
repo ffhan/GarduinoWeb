@@ -22,7 +22,7 @@ namespace Garduino.Controllers.front
         private readonly ICodeRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private delegate IEnumerable<Code> RepositoryQuery(string id, string userId);
+        private delegate IEnumerable<Code> RepositoryQuery(string id, string userId); //used to ease search
 
         public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
