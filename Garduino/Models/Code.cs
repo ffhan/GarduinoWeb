@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 using Garduino.Models.ViewModels;
 
 namespace Garduino.Models
@@ -34,6 +35,7 @@ namespace Garduino.Models
         [DisplayName("Is it completed?")]
         public bool IsCompleted { get; set; }
 
+        [HiddenInput]
         public string UserId { get; set; }
 
         [Required]
@@ -59,7 +61,17 @@ namespace Garduino.Models
         {
             Action = code.Action;
             ActionName = code.ActionName;
-
+            DeviceName = code.DeviceName;
+            if (IsCompleted != code.IsCompleted && code.IsCompleted)
+            {
+                DateCompleted = DateTime.Now;
+                IsCompleted = code.IsCompleted;
+            }
+            else if (IsCompleted != code.IsCompleted && !code.IsCompleted)
+            {
+                DateCompleted = DateTime.MinValue;
+                IsCompleted = code.IsCompleted;
+            }
         }
 
         public bool IsFromDevice(string device)

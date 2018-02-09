@@ -57,7 +57,6 @@ namespace Garduino.Controllers.api
             return Ok();
         }
 
-
         // GET: api/Code/5
         [HttpGet("id={id}")]
         public async Task<IActionResult> GetCode([FromRoute] Guid id)

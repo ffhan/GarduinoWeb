@@ -10,5 +10,6 @@ namespace Garduino.Data
     {
         IEnumerable<Code> GetActive(string userId);
         Task Complete(Code code, DateTime dateExecuted, string userId);
+        IEnumerable<Code> GetDeviceFromActiveCodes(string device, string userId);
     }
 }

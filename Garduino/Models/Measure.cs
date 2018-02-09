@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Garduino.Models
 {// TODO: Add device name
@@ -32,6 +33,7 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
+        [HiddenInput]
         public string UserId { get; set; }
 
         [Required]
@@ -71,7 +73,7 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-            //DeviceName = measure.DeviceName;
+            DeviceName = measure.DeviceName;
         }
 
         

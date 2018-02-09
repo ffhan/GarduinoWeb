@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
 using Garduino.Models;
 using Garduino.Models.ViewModels;
+using GarduinoUniversal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -20,38 +22,67 @@ namespace Garduino.Controllers.front
         private readonly ICodeRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        private delegate IEnumerable<Code> RepositoryQuery(string id, string userId);
+
         public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
             _repository = repository;
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string id) => await SearchOperator(_repository.GetDeviceFromActiveCodes, _repository.GetActive, id);
+
+        public async Task<IActionResult> All(string id) => await SearchOperator(_repository.GetDevice, _repository.GetAll, id);
+
+        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<string, IEnumerable<Code>> alternativeSearch, string id)
         {
-            HashSet<Code> codes = new HashSet<Code>(_repository.GetActive(await GetCurrentUserIdAsync()));
-            return View(codes);
+            string trimmed = StringOperations.PrepareForSearch(id);
+            if (!string.IsNullOrWhiteSpace(trimmed))
+            {
+                ViewData["searchInput"] = trimmed;
+                return View(mainSearch.Invoke(id, await GetCurrentUserIdAsync()));
+            }
+            return View(alternativeSearch.Invoke(await GetCurrentUserIdAsync()));
         }
 
-        public async Task<IActionResult> All()
-        {
-            HashSet<Code> codes = new HashSet<Code>(_repository.GetAll(await GetCurrentUserIdAsync()));
-            return View(codes);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Create(CodeViewModel codel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Action,ActionName,DeviceName")] Code code)
         {
-            if (!ModelState.IsValid) return View(codel);
-            Code code = new Code(codel);
+            if (!ModelState.IsValid) return View(code);
             await _repository.AddAsync(code, await GetCurrentUserIdAsync());
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+            return View(await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync()));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id, Action, ActionName, IsCompleted, DeviceName")] Code code)
+        {
+            if (id != code.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(code);
+            try
+            {
+                await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync());
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _repository.ContainsAsync(code, await GetCurrentUserIdAsync()))
+                {
+                    return NotFound();
+                }
+                throw;
+            }
+            return RedirectToAction(nameof(Index));
+        }
         
         public async Task<IActionResult> Details(Guid id)
         {

@@ -57,9 +57,14 @@ namespace Garduino.Data
             await UpdateAsync(id, code, userId);
         }
 
+        public IEnumerable<Code> GetDeviceFromActiveCodes(string device, string userId)
+        {
+            return _context.Code.Where(g => g.UserId.Equals(userId) && g.IsFromDevice(device) && !g.IsCompleted);
+        }
+
         public IEnumerable<Code> GetDevice(string device, string userId)
         {
-            return _context.Code.Where(g => g.UserId.Equals(userId) && g.DeviceName.Equals(device));
+            return _context.Code.Where(g => g.UserId.Equals(userId) && g.IsFromDevice(device));
         }
 
         public async Task<Code> GetAsync(Guid id, string userId)
@@ -88,7 +93,7 @@ namespace Garduino.Data
         {
             Code code = await GetAsync(id, userId);
             if (code is null) return false;
-            code.Update(code);
+            code.Update(what);
             _context.Entry(code).State = EntityState.Modified;
             try
             {

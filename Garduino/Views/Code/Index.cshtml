@@ -10,15 +10,24 @@
     <a asp-action="Create">Create New</a> | 
     <a asp-action="All">See all</a>
 </p>
+<form asp-controller="Code" asp-action="Index" method="get">
+    @await Html.PartialAsync("Search")
+</form>
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Action)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DateArrived)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Action)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateArrived)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeviceName)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -29,7 +38,13 @@
                 @Html.DisplayFor(modelItem => item.Action)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.ActionName)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.DateArrived)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeviceName)
             </td>
             <td>
                 @Html.Partial("TableLinks", item)

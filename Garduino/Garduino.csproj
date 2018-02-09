@@ -8,11 +8,14 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20180110201214_CodeUpdate.cs" />
     <Compile Remove="Data\Migrations\20180110201214_CodeUpdate.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180209130807_HideUserId.cs" />
+    <Compile Remove="Data\Migrations\20180209130807_HideUserId.Designer.cs" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="bootstrap" Version="3.3.7" />
+    <PackageReference Include="bootstrap" Version="4.0.0" />
+    <PackageReference Include="Chart.Mvc" Version="1.0.0.2" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.1" />
@@ -33,13 +36,17 @@
     <PackageReference Include="Serilog.Sinks.Email" Version="2.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServerCore" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GarduinoUniversal\GarduinoUniversal.csproj" />
   </ItemGroup>
 
 </Project>

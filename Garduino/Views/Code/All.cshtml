@@ -9,6 +9,9 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<form asp-controller="Code" asp-action="All" method="get">
+    @await Html.PartialAsync("Search")
+</form>
 <table class="table">
     <thead>
     <tr>
@@ -16,16 +19,22 @@
             @Html.DisplayNameFor(model => model.Action)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.DateArrived)
+            @Html.DisplayNameFor(model => model.ActionName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.DateCompleted)
+            @Html.DisplayNameFor(model => model.DateArrived)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.DateExecuted)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.DateCompleted)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.IsCompleted)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeviceName)
         </th>
         <th></th>
     </tr>
@@ -37,16 +46,22 @@
                 @Html.DisplayFor(modelItem => item.Action)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateArrived)
+                @Html.DisplayFor(modelItem => item.ActionName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateCompleted)
+                @Html.DisplayFor(modelItem => item.DateArrived)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateExecuted)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.DateCompleted)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeviceName)
             </td>
             <td>
                 @Html.Partial("TableLinks", item)

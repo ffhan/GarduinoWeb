@@ -1,0 +1,61 @@
+﻿@model Garduino.Models.Measure
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Measure</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DateTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DateTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SoilMoisture)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SoilMoisture)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SoilDescription)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SoilDescription)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AirHumidity)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AirHumidity)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AirTemperature)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AirTemperature)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LightState)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LightState)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DeviceName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeviceName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
