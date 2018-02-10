@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using GarduinoUniversal;
 
 namespace Garduino.Models
 {// TODO: Add device name
-    public class Measure : IEquatable<Measure>
+    public class Measure : IMeasureModel
     {
 
         [Key]
@@ -40,6 +41,8 @@ namespace Garduino.Models
         [MinLength(4)]
         public string DeviceName { get; set; }
 
+        public virtual Device Device { get; set; }
+
         public void SetUser(string id) => UserId = id;
 
         public bool EqualsEf(Measure measure)
@@ -47,10 +50,17 @@ namespace Garduino.Models
            return Equals(measure);
         }
 
+        public int CompareTo(Measure other)
+        {
+            return DateTime.CompareTo(other.DateTime);
+        }
+
         public override bool Equals(object obj)
         {
            return Equals(obj as Measure);
         }
+
+        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
 
         public bool Equals(Measure other)
         {
@@ -96,10 +106,7 @@ namespace Garduino.Models
             return !(measure1 == measure2);
         }
 
-        public bool IsFromDevice(string device)
-        {
-            return DeviceName.ToUpper().Equals(device.ToUpper());
-        }
+        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(DeviceName, device);
 
         public override int GetHashCode()
         {

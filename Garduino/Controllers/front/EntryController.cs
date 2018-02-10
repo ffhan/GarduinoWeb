@@ -15,10 +15,10 @@ namespace Garduino.Controllers.front
     [Authorize]
     public class EntryController : Controller
     {
-        private readonly IRepository<Measure> _repository;
+        private readonly IMeasureRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EntryController(IRepository<Measure> repository, UserManager<ApplicationUser> userManager)
+        public EntryController(IMeasureRepository repository, UserManager<ApplicationUser> userManager)
         {
             _repository = repository;
             _userManager = userManager;

@@ -6,7 +6,7 @@ using Garduino.Models;
 
 namespace Garduino.Data
 {
-    public interface ICodeRepository : IRepository<Code>
+    public interface ICodeRepository : IBaseRepository<Code>, IDeviceable<Code>, ITimeable<Code>
     {
         IEnumerable<Code> GetActive(string userId);
         Task Complete(Code code, DateTime dateExecuted, string userId);

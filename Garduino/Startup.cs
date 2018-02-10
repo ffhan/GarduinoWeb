@@ -39,7 +39,7 @@ namespace Garduino
                 .AddJsonFormatters(options => options.ContractResolver = new CamelCasePropertyNamesContractResolver());
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -47,8 +47,9 @@ namespace Garduino
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IRepository<Measure>, EntryRepository>();
+            services.AddTransient<IMeasureRepository, EntryRepository>();
             services.AddTransient<ICodeRepository, CodeRepository>();
+            services.AddTransient<IDeviceRepository, DeviceRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -128,7 +129,7 @@ namespace Garduino
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Device}/{action=Index}/{id?}");
             });
         }
     }

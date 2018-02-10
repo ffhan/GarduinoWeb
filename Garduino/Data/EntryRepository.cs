@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Data
 {
-    public class EntryRepository : IRepository<Measure>
+    public class EntryRepository : IMeasureRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -55,7 +55,7 @@ namespace Garduino.Data
         }
 
         public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
-        {// TODO: IMPLEMENT COMPARATOR!
+        {
             return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
             && m.UserId.Equals(userId));
         }
@@ -87,6 +87,11 @@ namespace Garduino.Data
         public async Task<bool> ContainsAsync(Measure measure, string userId)
         {
             return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id, string userId)
+        {
+            return await _context.Measure.AnyAsync(g => g.UserId.Equals(userId) && g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id, string userId)

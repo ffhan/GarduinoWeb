@@ -6,10 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Garduino.Models.ViewModels;
+using GarduinoUniversal;
 
 namespace Garduino.Models
 {
-    public class Code : IComparable<Code>
+    public class Code : IBaseModel<Code>
     {
         [Key]
         [DisplayName("ID")]
@@ -40,6 +41,8 @@ namespace Garduino.Models
 
         [Required]
         public string DeviceName { get; set; }
+
+        public virtual Device Device { get; set; }
 
         public Code(CodeViewModel codeViewModel)
         {
@@ -74,6 +77,8 @@ namespace Garduino.Models
             }
         }
 
+        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+
         public bool IsFromDevice(string device)
         {
             return DeviceName.ToUpper().Equals(device.ToUpper());
@@ -87,6 +92,16 @@ namespace Garduino.Models
             if (!(IsCompleted ^ other.IsCompleted)) return -DateArrived.CompareTo(other.DateArrived);
             if (other.IsCompleted) return 1;
             return -1;
+        }
+
+        public bool EqualsEf(Code other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Equals(Code other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

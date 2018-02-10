@@ -115,7 +115,12 @@ namespace Garduino.Data
 
         public async Task<bool> ContainsAsync(Code what, string userId)
         {
-            return await _context.Code.AnyAsync(g => g.Equals(what) && g.UserId.Equals(userId));
+            return await _context.Code.AnyAsync(g => g.IsUser(userId) && g.Equals(what));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id, string userId)
+        {
+            return await _context.Code.AnyAsync(g => g.IsUser(userId) && g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id, string userId)
