@@ -22,7 +22,7 @@ namespace Garduino.Models
         public int SoilMoisture { get; set; }
 
         [DisplayName("Soil description")]
-        public String SoilDescription { get; set; }
+        public string SoilDescription { get; set; }
 
         [Required]
         [DisplayName("Air humidity")]
@@ -33,10 +33,6 @@ namespace Garduino.Models
         [Required]
         [DisplayName("Light on")]
         public bool LightState { get; set; }
-
-        [Required]
-        [MinLength(4)]
-        public string DeviceName { get; set; }
 
         public virtual Device Device { get; set; }
 
@@ -55,15 +51,14 @@ namespace Garduino.Models
         {
            return Equals(obj as Measure);
         }
-
-        public bool IsUser(string userId) => StringOperations.IsFromUser(Device.ApplicationUser.Id, userId);
+        
 
         public bool Equals(Measure other)
         {
            try
            {
                return other != null &&
-                      DateTime.Equals(other.DateTime) && IsFromDevice(other.DeviceName);
+                      DateTime.Equals(other.DateTime) && IsFromDevice(other.Device.Name);
            }
            catch (Exception e)
            {
@@ -79,7 +74,7 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-            DeviceName = measure.DeviceName;
+            Device = measure.Device;
         }
 
         
@@ -102,15 +97,20 @@ namespace Garduino.Models
             return !(measure1 == measure2);
         }
 
-        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(DeviceName, device);
+        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);
 
         public override int GetHashCode()
         {
             var hashCode = -1004238049;
             hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<Device>.Default.GetHashCode(Device);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<int>.Default.GetHashCode(SoilMoisture);
             return hashCode;
+        }
+
+        public void SetDevice(Device device)
+        {
+            Device = device;
         }
     }
 }

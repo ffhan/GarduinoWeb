@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Models;
+using GarduinoUniversal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Data
@@ -16,9 +17,9 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Measure measure, string userId)
+        public async Task<bool> AddAsync(Measure measure, Device device)
         {
-            bool tmp = await ContainsAsync(measure, userId);
+            bool tmp = await ContainsAsync(measure, device.Name);
             if (!tmp)
             {
                 _context.Measure.Add(measure);
@@ -88,9 +89,9 @@ namespace Garduino.Data
             return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.Device.ApplicationUser.Id.Equals(userId));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, string userId)
+        public async Task<bool> ContainsAsync(Guid id, string deviceName)
         {
-            return await _context.Measure.AnyAsync(g => g.Device.ApplicationUser.Id.Equals(userId) && g.Id.Equals(id));
+            return await _context.Measure.AnyAsync(g => StringOperations.IsFromDevice(g.Device.Name, deviceName) && g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id, string userId)
@@ -141,7 +142,7 @@ namespace Garduino.Data
         {
             foreach (var measure in all)
             {
-                await AddAsync(measure, userId);
+                //await AddAsync(measure, userId);
             }
         }
     }

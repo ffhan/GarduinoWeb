@@ -2,7 +2,7 @@
 
 namespace Garduino.Models
 {
-    public interface IBaseModel<T> : IComparable<T>
+    public interface IBaseModel<T>
     {
         Guid Id { get; set; }
 

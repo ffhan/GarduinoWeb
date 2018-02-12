@@ -56,7 +56,7 @@ namespace Garduino.Controllers.front
         {
             if (ModelState.IsValid)
             {
-                await _repository.AddAsync(measure, await GetCurrentUserIdAsync());
+                //await _repository.AddAsync(measure, );
                 return RedirectToAction(nameof(Index));
             }
             return View(measure);
@@ -122,6 +122,8 @@ namespace Garduino.Controllers.front
             var userId = await GetCurrentUserIdAsync();
             return await _repository.ContainsAsync(await _repository.GetAsync(id, userId), userId);
         }
+
+        private async Task<ApplicationUser> GetCurrentUserAsync() => await _userManager.GetUserAsync(HttpContext.User);
 
         private async Task<string> GetCurrentUserIdAsync()
         {

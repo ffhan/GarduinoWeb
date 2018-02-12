@@ -16,7 +16,7 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Code code, string userId)
+        public async Task<bool> AddAsync(Code code, Device device)
         {
             code.DateArrived = DateTime.Now;
             try

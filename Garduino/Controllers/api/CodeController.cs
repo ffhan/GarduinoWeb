@@ -95,7 +95,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.AddAsync(code, await GetCurrentUserIdAsync())) return Ok();
+            //if (await _repository.AddAsync(code, await GetCurrentUserAsync())) return Ok();
             return BadRequest();
         }
 

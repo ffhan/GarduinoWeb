@@ -6,7 +6,7 @@ using Garduino.Models;
 
 namespace Garduino.Data
 {
-    public interface IMeasureRepository : IBaseRepository<Measure>, IDeviceable<Measure>, ITimeable<Measure>
+    public interface IMeasureRepository : IBaseRepository<Measure, string>, IDeviceable<Measure>, ITimeable<Measure>
     {
         
         Task<Measure> GetAsync(DateTime dateTime, string userId);

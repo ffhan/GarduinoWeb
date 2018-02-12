@@ -10,7 +10,7 @@ using GarduinoUniversal;
 
 namespace Garduino.Models
 {
-    public class Code : IBaseModel<Code>
+    public class Code : ICodeModel
     {
         [Key]
         [DisplayName("ID")]
@@ -36,16 +36,18 @@ namespace Garduino.Models
         [DisplayName("Is it completed?")]
         public bool IsCompleted { get; set; }
 
-        [Required]
-        public string DeviceName { get; set; }
-
         public virtual Device Device { get; set; }
 
         public Code(CodeViewModel codeViewModel)
         {
             ActionName = codeViewModel.ActionName;
             Action = codeViewModel.Action;
-            DeviceName = codeViewModel.DeviceName;
+        }
+
+        public Code(Code other)
+        {
+            Action = other.Action;
+            ActionName = other.ActionName;
         }
 
 
@@ -60,7 +62,7 @@ namespace Garduino.Models
         {
             Action = code.Action;
             ActionName = code.ActionName;
-            DeviceName = code.DeviceName;
+            Device = code.Device;
             if (IsCompleted != code.IsCompleted && code.IsCompleted)
             {
                 DateCompleted = DateTime.Now;
@@ -73,12 +75,8 @@ namespace Garduino.Models
             }
         }
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(Device.ApplicationUser.Id, userId);
-
-        public bool IsFromDevice(string device)
-        {
-            return DeviceName.ToUpper().Equals(device.ToUpper());
-        }
+        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);
+        //TODO: see if it's smart to do this with name instead of id
 
         public Code() { }
 
@@ -90,14 +88,9 @@ namespace Garduino.Models
             return -1;
         }
 
-        public bool EqualsEf(Code other)
+        public void SetDevice(Device device)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Equals(Code other)
-        {
-            throw new NotImplementedException();
+            Device = device;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Create([Bind("Action,ActionName,DeviceName")] Code code)
         {
             if (!ModelState.IsValid) return View(code);
-            await _repository.AddAsync(code, await GetCurrentUserIdAsync());
+            //await _repository.AddAsync(code, await GetCurrentUserAsync());
             return RedirectToAction("Index");
         }
 
@@ -91,6 +91,8 @@ namespace Garduino.Controllers.front
         }
 
         public string CurrentUserName => User.Identity.Name;
+
+        private async Task<ApplicationUser> GetCurrentUserAsync() => await _userManager.GetUserAsync(HttpContext.User);
 
         private async Task<string> GetCurrentUserIdAsync()
         {

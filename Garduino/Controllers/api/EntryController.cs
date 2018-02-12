@@ -122,7 +122,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.AddAsync(measure, await GetCurrentUserIdAsync())) return Ok();
+            //if (await _repository.AddAsync(measure, await GetCurrentUserIdAsync())) return Ok();
             return BadRequest();
         }
 

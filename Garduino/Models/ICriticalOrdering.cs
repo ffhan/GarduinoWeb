@@ -10,8 +10,6 @@ namespace Garduino.Models
         bool EqualsEf(T other);
         bool Equals(object obj);
 
-        bool IsUser(string userId);
-
         int GetHashCode();
     }
 }

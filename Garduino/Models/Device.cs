@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Garduino.Models
 {
-    public class Device : IBaseModel<Device>
+    public class Device : IDeviceModel
     {
 
         [Key]
@@ -33,14 +33,9 @@ namespace Garduino.Models
             Name = code.Name;
         }
 
-        public bool EqualsEf(Device other)
-        {
-            return Equals(other);
-        }
+        public void SetUser(ApplicationUser user) => ApplicationUser = user;
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(ApplicationUser.Id, userId);
-
-        public int CompareTo(Device other) => String.Compare(Name, other.Name, StringComparison.Ordinal);
+        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(ApplicationUser.Id, user.Id);
 
     }
 }
