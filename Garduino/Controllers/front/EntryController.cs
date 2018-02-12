@@ -16,10 +16,12 @@ namespace Garduino.Controllers.front
     public class EntryController : Controller
     {
         private readonly IMeasureRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EntryController(IMeasureRepository repository, UserManager<ApplicationUser> userManager)
+        public EntryController(IUserRepository userRepository, IMeasureRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
         }
@@ -123,13 +125,8 @@ namespace Garduino.Controllers.front
             return await _repository.ContainsAsync(await _repository.GetAsync(id, user), user);
         }
 
-        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<User> GetCurrentUser() => await _userRepository.GetAsync(await _userManager.GetUserAsync(HttpContext.User));
 
-        private async Task<string> GetCurrentUserIdAsync()
-        {
-            var userId = await _userManager.GetUserAsync(HttpContext.User);
-            return userId?.Id;
-        }
 
 
     }

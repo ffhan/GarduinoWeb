@@ -20,12 +20,14 @@ namespace Garduino.Controllers.front
     {
 
         private readonly ICodeRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private delegate IEnumerable<Code> RepositoryQuery(string id, ApplicationUser user); //used to ease search
+        private delegate IEnumerable<Code> RepositoryQuery(string id, User user); //used to ease search
 
-        public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
+        public CodeController(IUserRepository userRepository, ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
         }
@@ -34,7 +36,7 @@ namespace Garduino.Controllers.front
 
         public async Task<IActionResult> All(string id) => await SearchOperator(_repository.GetDevice, _repository.GetAll, id);
 
-        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<ApplicationUser, IEnumerable<Code>> alternativeSearch, string id)
+        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<User, IEnumerable<Code>> alternativeSearch, string id)
         {
             string trimmed = StringOperations.PrepareForSearch(id);
             if (!string.IsNullOrWhiteSpace(trimmed))
@@ -92,12 +94,7 @@ namespace Garduino.Controllers.front
 
         public string CurrentUserName => User.Identity.Name;
 
-        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<User> GetCurrentUser() => await _userRepository.GetAsync(await _userManager.GetUserAsync(HttpContext.User));
 
-        private async Task<string> GetCurrentUserIdAsync()
-        {
-            var userId = await _userManager.GetUserAsync(HttpContext.User);
-            return userId?.Id;
-        }
     }
 }

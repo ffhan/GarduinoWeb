@@ -26,17 +26,6 @@ namespace Garduino.Data
             );
             */
 
-            builder.Entity<ApplicationUser>()
-                .HasMany(c => c.Devices)
-                .WithOne(c => c.User);
-            builder.Entity<Device>()
-                .HasMany(c => c.Codes)
-                .WithOne(c => c.Device);
-            builder.Entity<Device>()
-                .HasMany(c => c.Measures)
-                .WithOne(c => c.Device);
-
-
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
@@ -48,5 +37,7 @@ namespace Garduino.Data
         public DbSet<Garduino.Models.Code> Code { get; set; }
 
         public DbSet<Garduino.Models.Device> Device { get; set; }
+
+        public DbSet<User> User { get; set; }
     }
 }

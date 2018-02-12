@@ -17,9 +17,8 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Measure measure, ApplicationUser user)
+        public async Task<bool> AddAsync(Measure measure, User user)
         {
-            measure.SetUser(user);
             bool tmp = await ContainsAsync(measure, user);
             if (!tmp)
             {
@@ -30,41 +29,41 @@ namespace Garduino.Data
             return false;
         }
 
-        public IEnumerable<Measure> GetAll(ApplicationUser user)
+        public IEnumerable<Measure> GetAll(User user)
         {
-            return _context.Measure.Where(g => StringOperations.IsFromUser(g.User.Id, user.Id)).OrderByDescending(g => g.DateTime);
+            return _context.Measure.Where(g => StringOperations.IsFromUser(g.Device.User.Id, user.Id)).OrderByDescending(g => g.DateTime);
         }
 
-        public IEnumerable<Measure> GetDevice(string device, ApplicationUser user)
+        public IEnumerable<Measure> GetDevice(string device, User user)
         {
-            return _context.Measure.Where(g => g.IsFromDevice(device) && StringOperations.IsFromUser(g.User.Id, user.Id));
+            return _context.Measure.Where(g => g.IsFromDevice(device) && StringOperations.IsFromUser(g.Device.User.Id, user.Id));
         }
 
-        public async Task<Measure> GetAsync(Measure measure, ApplicationUser user)
+        public async Task<Measure> GetAsync(Measure measure, User user)
         {
             return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && StringOperations.IsFromUser(
-                g.User.Id, user.Id));
+                g.Device.User.Id, user.Id));
         }
-        public async Task<Measure> GetAsync(Guid id, ApplicationUser user)
+        public async Task<Measure> GetAsync(Guid id, User user)
         {
             return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && StringOperations.IsFromUser(
-                g.User.Id, user.Id));
+                g.Device.User.Id, user.Id));
         }
 
-        public async Task<Measure> GetAsync(DateTime dateTime, ApplicationUser user)
+        public async Task<Measure> GetAsync(DateTime dateTime, User user)
         {
             var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && StringOperations.IsFromUser(
-                g.User.Id, user.Id));
+                g.Device.User.Id, user.Id));
             return tmp;
         }
 
-        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, ApplicationUser user)
+        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, User user)
         {
             return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
-            && StringOperations.IsFromUser(m.User.Id, user.Id));
+            && StringOperations.IsFromUser(m.Device.User.Id, user.Id));
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Measure measure, ApplicationUser user)
+        public async Task<bool> UpdateAsync(Guid id, Measure measure, User user)
         {
             Measure mes = await GetAsync(id, user);
             if (mes is null) return false;
@@ -88,18 +87,18 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Measure measure, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Measure measure, User user)
         {
             return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && 
-            StringOperations.IsFromUser(g.User.Id, user.Id));
+            StringOperations.IsFromUser(g.Device.User.Id, user.Id));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Guid id, User user)
         {
-            return await _context.Measure.AnyAsync(g => StringOperations.IsFromUser(g.User.Id, user.Id) && g.Id.Equals(id));
+            return await _context.Measure.AnyAsync(g => StringOperations.IsFromUser(g.Device.User.Id, user.Id) && g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, ApplicationUser user)
+        public async Task<bool> DeleteAsync(Guid id, User user)
         {
             try
             {
@@ -113,7 +112,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Measure measure, ApplicationUser user)
+        public async Task<Guid> GetId(Measure measure, User user)
         {
             Measure mes = await GetAsync(measure.DateTime, user);
             return mes.Id;
@@ -138,12 +137,12 @@ namespace Garduino.Data
             return true;
         }
 
-        public Measure GetLatest(ApplicationUser user)
+        public Measure GetLatest(User user)
         {
             return GetAll(user).FirstOrDefault();
         }
 
-        public async Task AddAllAsync(ISet<Measure> all, ApplicationUser user)
+        public async Task AddAllAsync(ISet<Measure> all, User user)
         {
             foreach (var measure in all)
             {

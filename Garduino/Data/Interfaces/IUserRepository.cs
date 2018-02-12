@@ -6,8 +6,9 @@ using Garduino.Models;
 
 namespace Garduino.Data
 {
-    public interface ITimeable<T>
+    public interface IUserRepository
     {
-        T GetLatest(ApplicationUser user);
+        Task<User> GetAsync(ApplicationUser user);
+        Task AddAsync(User user);
     }
 }

@@ -14,7 +14,7 @@ namespace Garduino.Data
 
         public DeviceRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<bool> AddAsync(Device what, ApplicationUser user)
+        public async Task<bool> AddAsync(Device what, User user)
         {
             what.SetUser(user);
             try
@@ -29,37 +29,37 @@ namespace Garduino.Data
             return true;
         }
 
-        public IEnumerable<Device> GetAll(ApplicationUser user)
+        public IEnumerable<Device> GetAll(User user)
         {
             return _context.Device.Where(g => g.IsUser(user));
         }
 
-        public IEnumerable<Device> GetDevice(string device, ApplicationUser user)
+        public IEnumerable<Device> GetDevice(string device, User user)
         {
             return _context.Device.Where(g => g.Name.Equals(device) && g.IsUser(user));
         }
 
-        public async Task<bool> DeviceExists(string device, ApplicationUser user)
+        public async Task<bool> DeviceExists(string device, User user)
         {
-            if (user.Devices == null) return false;
-            foreach (var dev in user.Devices)
+            if (user.Device == null) return false;
+            foreach (var dev in user.Device)
             {
                 if(StringOperations.IsFromDevice(dev.Name, device)) return true;
             }
             return false;
         }
 
-            public async Task<Device> GetAsync(Guid id, ApplicationUser user)
+            public async Task<Device> GetAsync(Guid id, User user)
         {
             return await _context.Device.FirstOrDefaultAsync(g => g.Id.Equals(id) && g.IsUser(user));
         }
 
-        public async Task<Device> GetAsync(Device what, ApplicationUser user)
+        public async Task<Device> GetAsync(Device what, User user)
         {
             return await _context.Device.FirstOrDefaultAsync(g => g.Equals(what) && g.IsUser(user));
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Device what, ApplicationUser user)
+        public async Task<bool> UpdateAsync(Guid id, Device what, User user)
         {
             Device device = await GetAsync(id, user);
             if (device is null) return false;
@@ -83,17 +83,17 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Device what, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Device what, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && Equals(what));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Guid id, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, ApplicationUser user)
+        public async Task<bool> DeleteAsync(Guid id, User user)
         {
             try
             {
@@ -107,7 +107,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Device what, ApplicationUser user)
+        public async Task<Guid> GetId(Device what, User user)
         {
             Device device = await _context.Device.FirstOrDefaultAsync(g => g.IsUser(user) && Equals(what));
             return device.Id;
@@ -129,7 +129,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task AddAllAsync(ISet<Device> all, ApplicationUser user)
+        public async Task AddAllAsync(ISet<Device> all, User user)
         {
             foreach (Device device in all)
             {

@@ -14,6 +14,7 @@ namespace Garduino.Models
         [Key]
         public Guid Id { get; set; }
 
+
         [Required]
         [DisplayName("Time stamp")]
         //[DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
@@ -35,13 +36,11 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
-        public ApplicationUser User { get; set; }
-
         [Required]
         [MinLength(4)]
         public string DeviceName { get; set; }
 
-        public Device Device { get; set; }
+        public virtual Device Device { get; set; }
 
         public bool EqualsEf(Measure measure)
         {
@@ -58,12 +57,7 @@ namespace Garduino.Models
            return Equals(obj as Measure);
         }
 
-        public void SetUser(ApplicationUser user)
-        {
-            User = user;
-        }
-
-        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(User.Id, user.Id);
+        public bool IsUser(User user) => StringOperations.IsFromUser(Device.User.Id, user.Id);
 
         public bool Equals(Measure other)
         {
@@ -115,7 +109,7 @@ namespace Garduino.Models
         {
             var hashCode = -1004238049;
             hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<ApplicationUser>.Default.GetHashCode(User);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Device>.Default.GetHashCode(Device);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceName);
             return hashCode;
         }

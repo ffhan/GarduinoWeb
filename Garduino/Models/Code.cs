@@ -17,6 +17,7 @@ namespace Garduino.Models
         [DisplayName("ID")]
         public Guid Id { get; set; }
 
+
         [Required]
         [DisplayName("Action")]
         public int Action { get; set; }
@@ -38,8 +39,7 @@ namespace Garduino.Models
         public bool IsCompleted { get; set; }
 
         public string DeviceName { get; set; }
-        public Device Device { get; set; }
-        public ApplicationUser User { get; set; }
+        public virtual Device Device { get; set; }
 
         public Code(CodeViewModel codeViewModel)
         {
@@ -70,7 +70,7 @@ namespace Garduino.Models
             }
         }
 
-        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(User.Id, user.Id);
+        public bool IsUser(User user) => StringOperations.IsFromUser(Device.User.Id, user.Id);
 
         public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);
 
@@ -82,11 +82,6 @@ namespace Garduino.Models
             if (!(IsCompleted ^ other.IsCompleted)) return -DateArrived.CompareTo(other.DateArrived);
             if (other.IsCompleted) return 1;
             return -1;
-        }
-
-        public void SetUser(ApplicationUser user)
-        {
-            User = user;
         }
     }
 }

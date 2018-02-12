@@ -6,8 +6,8 @@ using Garduino.Models;
 
 namespace Garduino.Data
 {
-    public interface IDeviceable<T>
+    public interface ITimeable<T>
     {
-        IEnumerable<T> GetDevice(string device, ApplicationUser user);
+        T GetLatest(User user);
     }
 }

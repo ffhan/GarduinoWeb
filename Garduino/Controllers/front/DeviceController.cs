@@ -24,10 +24,12 @@ namespace Garduino.Controllers.front
          */
     {
         private readonly IDeviceRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DeviceController(IDeviceRepository repository, UserManager<ApplicationUser> userManager)
+        public DeviceController(IUserRepository userRepository, IDeviceRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
         }
@@ -36,7 +38,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Index()
         {
             var user = await GetCurrentUser(); //TODO: fix model binding
-            return View(user.Devices);
+            return View(user.Device);
         }
 
         public async Task<IActionResult> See(Guid? id)
@@ -73,7 +75,7 @@ namespace Garduino.Controllers.front
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Device device)
+        public async Task<IActionResult> Create(Device device)
         {
             if (!ModelState.IsValid) return View(device);
             await _repository.AddAsync(device, await GetCurrentUser());
@@ -162,13 +164,7 @@ namespace Garduino.Controllers.front
             return await _repository.ContainsAsync(id, await GetCurrentUser());
         }
 
-        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
-
-        private async Task<string> GetCurrentUserIdAsync()
-        {
-            var userId = await _userManager.GetUserAsync(HttpContext.User);
-            return userId?.Id;
-        }
+        private async Task<User> GetCurrentUser() => await _userRepository.GetAsync(await _userManager.GetUserAsync(HttpContext.User));
 
         [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> VerifyName(string name)

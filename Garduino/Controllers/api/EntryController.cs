@@ -20,9 +20,9 @@ namespace Garduino.Controllers.api
     public class EntryController : Controller
     {
         private readonly IMeasureRepository _repository;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public EntryController(IMeasureRepository repository, UserManager<ApplicationUser> userManager)
+        public EntryController(IMeasureRepository repository, UserManager<User> userManager)
         {
             _repository = repository;
             _userManager = userManager;
@@ -154,12 +154,6 @@ namespace Garduino.Controllers.api
             if(await _repository.DeleteAllAsync()) return Ok();
             return BadRequest();
         }
-
-        private async Task<string> GetCurrentUserIdAsync()
-        {
-            var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
-            return userId?.Id;
-        }
-        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<User> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Models.Interfaces;
@@ -17,30 +18,31 @@ namespace Garduino.Models
         [DisplayName("ID")]
         public Guid Id { get; set; }
 
+        public virtual User User { get; set; }
+
         [Required]
         [MinLength(4)]
         [Remote(action: "VerifyName", controller: "Device")]
         [DisplayName("Device name")]
         public string Name { get; set; }
 
-        public ApplicationUser User { get; set; }
-        public void SetUser(ApplicationUser user)
+        public void SetUser(User user)
         {
             User = user;
         }
 
-        public ICollection<Measure> Measures { get; set; }
+        public virtual ICollection<Measure> Measure { get; set; }
 
-        public ICollection<Code> Codes { get; set; }
+        public virtual ICollection<Code> Code { get; set; }
 
         public void Update(Device code)
         {
             Name = code.Name;
         }
 
-        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(User.Id, user.Id);
+        public bool IsUser(User user) => StringOperations.IsFromUser(User.Id, user.Id);
 
-        public int CompareTo(Device other) => String.Compare(Name, other.Name, StringComparison.Ordinal);
+        public int CompareTo(Device other) => string.Compare(Name, other.Name, StringComparison.Ordinal);
 
     }
 }

@@ -50,6 +50,7 @@ namespace Garduino
             services.AddTransient<IMeasureRepository, EntryRepository>();
             services.AddTransient<ICodeRepository, CodeRepository>();
             services.AddTransient<IDeviceRepository, DeviceRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

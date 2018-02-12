@@ -6,12 +6,6 @@ namespace Garduino.Models.Interfaces
     {
         Guid Id { get; set; }
 
-        ApplicationUser User { get; set; }
-
         void Update(T what);
-
-        void SetUser(ApplicationUser user);
-
-        bool IsUser(ApplicationUser user);
     }
 }
