@@ -31,17 +31,17 @@ namespace Garduino.Controllers.front
             if (!string.IsNullOrWhiteSpace(trimmed))
             {
                 ViewData["searchInput"] = trimmed;
-                return View(_repository.GetDevice(trimmed, await GetCurrentUserIdAsync()));
+                return View(_repository.GetDevice(trimmed, await GetCurrentUser()));
             }
 
-            return View(_repository.GetAll(await GetCurrentUserIdAsync()));
+            return View(_repository.GetAll(await GetCurrentUser()));
         }
 
         // GET: Entry/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null) return NotFound();
-            return View(await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync()));
+            return View(await _repository.GetAsync(id.Value, await GetCurrentUser()));
         }
 
         // GET: Entry/Create
@@ -56,7 +56,7 @@ namespace Garduino.Controllers.front
         {
             if (ModelState.IsValid)
             {
-                await _repository.AddAsync(measure, await GetCurrentUserIdAsync());
+                await _repository.AddAsync(measure, await GetCurrentUser());
                 return RedirectToAction(nameof(Index));
             }
             return View(measure);
@@ -66,7 +66,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(id.Value, await GetCurrentUser());
             if (measure == null)
             {
                 return NotFound();
@@ -86,7 +86,7 @@ namespace Garduino.Controllers.front
             if (!ModelState.IsValid) return View(measure);
             try
             {
-                await _repository.UpdateAsync(id, measure, await GetCurrentUserIdAsync());
+                await _repository.UpdateAsync(id, measure, await GetCurrentUser());
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,7 +103,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(id.Value, await GetCurrentUser());
             if (measure == null) return NotFound();
             return View(measure);
         }
@@ -113,20 +113,24 @@ namespace Garduino.Controllers.front
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _repository.DeleteAsync(id, await GetCurrentUserIdAsync());
+            await _repository.DeleteAsync(id, await GetCurrentUser());
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> MeasureExists(Guid id)
         {
-            var userId = await GetCurrentUserIdAsync();
-            return await _repository.ContainsAsync(await _repository.GetAsync(id, userId), userId);
+            var user = await GetCurrentUser();
+            return await _repository.ContainsAsync(await _repository.GetAsync(id, user), user);
         }
+
+        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
 
         private async Task<string> GetCurrentUserIdAsync()
         {
             var userId = await _userManager.GetUserAsync(HttpContext.User);
             return userId?.Id;
         }
+
+
     }
 }

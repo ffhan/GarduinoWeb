@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<Measure>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.DateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SoilMoisture)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SoilDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AirHumidity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AirTemperature)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LightState)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeviceName)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoilMoisture)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoilDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AirHumidity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AirTemperature)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LightState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeviceName)
+            </td>
+            <td>
+                @Html.Partial("TableLinks", item)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

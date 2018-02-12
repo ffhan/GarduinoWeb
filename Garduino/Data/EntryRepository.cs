@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Models;
+using GarduinoUniversal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Data
@@ -16,10 +17,10 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Measure measure, string userId)
+        public async Task<bool> AddAsync(Measure measure, ApplicationUser user)
         {
-            measure.SetUser(userId);
-            bool tmp = await ContainsAsync(measure, userId);
+            measure.SetUser(user);
+            bool tmp = await ContainsAsync(measure, user);
             if (!tmp)
             {
                 _context.Measure.Add(measure);
@@ -29,40 +30,43 @@ namespace Garduino.Data
             return false;
         }
 
-        public IEnumerable<Measure> GetAll(string userId)
+        public IEnumerable<Measure> GetAll(ApplicationUser user)
         {
-            return _context.Measure.Where(g => g.UserId.Equals(userId)).OrderByDescending(g => g.DateTime);
+            return _context.Measure.Where(g => StringOperations.IsFromUser(g.User.Id, user.Id)).OrderByDescending(g => g.DateTime);
         }
 
-        public IEnumerable<Measure> GetDevice(string device, string userId)
+        public IEnumerable<Measure> GetDevice(string device, ApplicationUser user)
         {
-            return _context.Measure.Where(g => g.IsFromDevice(device) && g.UserId.Equals(userId));
+            return _context.Measure.Where(g => g.IsFromDevice(device) && StringOperations.IsFromUser(g.User.Id, user.Id));
         }
 
-        public async Task<Measure> GetAsync(Measure measure, string userId)
+        public async Task<Measure> GetAsync(Measure measure, ApplicationUser user)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.UserId.Equals(userId));
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && StringOperations.IsFromUser(
+                g.User.Id, user.Id));
         }
-        public async Task<Measure> GetAsync(Guid id, string userId)
+        public async Task<Measure> GetAsync(Guid id, ApplicationUser user)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && g.UserId.Equals(userId));
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && StringOperations.IsFromUser(
+                g.User.Id, user.Id));
         }
 
-        public async Task<Measure> GetAsync(DateTime dateTime, string userId)
+        public async Task<Measure> GetAsync(DateTime dateTime, ApplicationUser user)
         {
-            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && g.UserId.Equals(userId));
+            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && StringOperations.IsFromUser(
+                g.User.Id, user.Id));
             return tmp;
         }
 
-        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
+        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, ApplicationUser user)
         {
             return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
-            && m.UserId.Equals(userId));
+            && StringOperations.IsFromUser(m.User.Id, user.Id));
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Measure measure, string userId)
+        public async Task<bool> UpdateAsync(Guid id, Measure measure, ApplicationUser user)
         {
-            Measure mes = await GetAsync(id, userId);
+            Measure mes = await GetAsync(id, user);
             if (mes is null) return false;
             mes.Update(measure);
             _context.Entry(mes).State = EntityState.Modified;
@@ -72,7 +76,7 @@ namespace Garduino.Data
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await ContainsAsync(mes, userId))
+                if (!await ContainsAsync(mes, user))
                 {
                     return false;
                 }
@@ -84,21 +88,22 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Measure measure, string userId)
+        public async Task<bool> ContainsAsync(Measure measure, ApplicationUser user)
         {
-            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
+            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && 
+            StringOperations.IsFromUser(g.User.Id, user.Id));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, string userId)
+        public async Task<bool> ContainsAsync(Guid id, ApplicationUser user)
         {
-            return await _context.Measure.AnyAsync(g => g.UserId.Equals(userId) && g.Id.Equals(id));
+            return await _context.Measure.AnyAsync(g => StringOperations.IsFromUser(g.User.Id, user.Id) && g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, ApplicationUser user)
         {
             try
             {
-                _context.Measure.Remove(await GetAsync(id, userId));
+                _context.Measure.Remove(await GetAsync(id, user));
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -108,9 +113,9 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Measure measure, string userId)
+        public async Task<Guid> GetId(Measure measure, ApplicationUser user)
         {
-            Measure mes = await GetAsync(measure.DateTime, userId);
+            Measure mes = await GetAsync(measure.DateTime, user);
             return mes.Id;
         }
 
@@ -133,16 +138,16 @@ namespace Garduino.Data
             return true;
         }
 
-        public Measure GetLatest(string userId)
+        public Measure GetLatest(ApplicationUser user)
         {
-            return GetAll(userId).FirstOrDefault();
+            return GetAll(user).FirstOrDefault();
         }
 
-        public async Task AddAllAsync(ISet<Measure> all, string userId)
+        public async Task AddAllAsync(ISet<Measure> all, ApplicationUser user)
         {
             foreach (var measure in all)
             {
-                await AddAsync(measure, userId);
+                await AddAsync(measure, user);
             }
         }
     }

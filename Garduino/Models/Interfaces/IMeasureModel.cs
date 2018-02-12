@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Garduino.Models
+namespace Garduino.Models.Interfaces
 {
-    public interface IMeasureModel : IBaseModel<Measure>, ICriticalOrdering<Measure>
+    public interface IMeasureModel : IBaseModel<Measure>, ICriticalOrdering<Measure>, IContainedInDevice
     {
 
 
@@ -10,13 +10,10 @@ namespace Garduino.Models
         DateTime DateTime { get; set; }
 
         int SoilMoisture { get; set; }
-        String SoilDescription { get; set; }
+        string SoilDescription { get; set; }
         float AirHumidity { get; set; }
         float AirTemperature { get; set; }
         bool LightState { get; set; }
-
-        string DeviceName { get; set; }
-        Device Device { get; set; }
 
         bool IsFromDevice(string device);
     }

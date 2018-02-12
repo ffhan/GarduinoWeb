@@ -32,13 +32,13 @@ namespace Garduino.Controllers.api
         [HttpGet]
         public async Task<IEnumerable<Measure>> GetMeasure()
         {
-            return _repository.GetAll(await GetCurrentUserIdAsync());
+            return _repository.GetAll(await GetCurrentUser());
         }
 
         [HttpGet("device={device}")]
         public async Task<IEnumerable<Measure>> GetMeasure([FromRoute] string device)
         {
-            return _repository.GetDevice(device, await GetCurrentUserIdAsync());
+            return _repository.GetDevice(device, await GetCurrentUser());
         }
 
         [HttpGet("date={dateTime}")]
@@ -46,7 +46,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var measure = await _repository.GetAsync(dateTime, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(dateTime, await GetCurrentUser());
 
             try
             {
@@ -66,7 +66,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var measure = await _repository.GetRangeAsync(dateTime1, dateTime2, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetRangeAsync(dateTime1, dateTime2, await GetCurrentUser());
 
             if (measure == null) return NotFound();
 
@@ -82,7 +82,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var measure = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(id, await GetCurrentUser());
 
             if (measure == null)
             {
@@ -97,9 +97,9 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Guid id = await _repository.GetId(measure, await GetCurrentUserIdAsync());
+            Guid id = await _repository.GetId(measure, await GetCurrentUser());
 
-            if (!await _repository.UpdateAsync(id, measure, await GetCurrentUserIdAsync())) return NoContent();
+            if (!await _repository.UpdateAsync(id, measure, await GetCurrentUser())) return NoContent();
             return Ok();
         }
 
@@ -109,7 +109,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (!await _repository.UpdateAsync(id, measure, await GetCurrentUserIdAsync())) return NoContent();
+            if (!await _repository.UpdateAsync(id, measure, await GetCurrentUser())) return NoContent();
             return Ok();
         }
 
@@ -122,7 +122,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.AddAsync(measure, await GetCurrentUserIdAsync())) return Ok();
+            if (await _repository.AddAsync(measure, await GetCurrentUser())) return Ok();
             return BadRequest();
         }
 
@@ -135,16 +135,16 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.DeleteAsync(id, await GetCurrentUserIdAsync())) return Ok(await _repository.GetAsync(id,
-                await GetCurrentUserIdAsync()));
+            if (await _repository.DeleteAsync(id, await GetCurrentUser())) return Ok(await _repository.GetAsync(id,
+                await GetCurrentUser()));
             return BadRequest();
         }
 
         [HttpGet("cmp/{dateTime1}&{dateTime2}")]
         public async Task<IActionResult> Compare(DateTime dateTime1, DateTime dateTime2)
         {
-            if (await _repository.GetAsync(dateTime1, await GetCurrentUserIdAsync()) == await _repository.GetAsync(dateTime2,
-                await GetCurrentUserIdAsync())) return Ok();
+            if (await _repository.GetAsync(dateTime1, await GetCurrentUser()) == await _repository.GetAsync(dateTime2,
+                await GetCurrentUser())) return Ok();
             return BadRequest();
         }
 
@@ -160,5 +160,6 @@ namespace Garduino.Controllers.api
             var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             return userId?.Id;
         }
+        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
     }
 }

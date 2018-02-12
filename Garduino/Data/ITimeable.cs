@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Models;
 
 namespace Garduino.Data
 {
     public interface ITimeable<T>
     {
-        T GetLatest(string userId);
+        T GetLatest(ApplicationUser user);
     }
 }

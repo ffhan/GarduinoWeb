@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Models.Interfaces;
 using GarduinoUniversal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Garduino.Models
 {
-    public class Device : IBaseModel<Device>
+    public class Device : IDeviceModel
     {
 
         [Key]
@@ -22,25 +23,22 @@ namespace Garduino.Models
         [DisplayName("Device name")]
         public string Name { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+        public void SetUser(ApplicationUser user)
+        {
+            User = user;
+        }
 
-        public virtual ICollection<Measure> Measures { get; set; }
+        public ICollection<Measure> Measures { get; set; }
 
-        public virtual ICollection<Code> Codes { get; set; }
+        public ICollection<Code> Codes { get; set; }
 
-        public void SetUser(string id) => UserId = id;
         public void Update(Device code)
         {
             Name = code.Name;
         }
 
-        public bool EqualsEf(Device other)
-        {
-            return Equals(other);
-        }
-
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(User.Id, user.Id);
 
         public int CompareTo(Device other) => String.Compare(Name, other.Name, StringComparison.Ordinal);
 

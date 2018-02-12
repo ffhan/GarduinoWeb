@@ -32,28 +32,27 @@ namespace Garduino.Controllers.api
         [HttpGet("all")]
         public async Task<IEnumerable<Code>> GetCode()
         {
-            var t = _repository.GetAll(await GetCurrentUserIdAsync());
-            return t;
+            return _repository.GetAll(await GetCurrentUser());
         }
 
         [HttpGet]
         public async Task<IEnumerable<Code>> GetActiveCode()
         {
-            return _repository.GetActive(await GetCurrentUserIdAsync());
+            return _repository.GetActive(await GetCurrentUser());
         }
 
         [HttpGet("complete")]
         public async Task<Code> GetLatestCode()
         {
-            return _repository.GetLatest(await GetCurrentUserIdAsync());
+            return _repository.GetLatest(await GetCurrentUser());
         }
 
         [HttpGet("complete={dateTime}")]
         public async Task<IActionResult> CompleteCode([FromRoute] DateTime dateTime) //TODO: Complete & Fix.
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            Code latest = _repository.GetLatest(await GetCurrentUserIdAsync());
-            await _repository.Complete(latest, dateTime, await GetCurrentUserIdAsync());
+            Code latest = _repository.GetLatest(await GetCurrentUser());
+            await _repository.Complete(latest, dateTime, await GetCurrentUser());
             return Ok();
         }
 
@@ -66,7 +65,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            Code code = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
+            Code code = await _repository.GetAsync(id, await GetCurrentUser());
 
             if (code == null)
             {
@@ -82,7 +81,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (!await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync())) return NoContent();
+            if (!await _repository.UpdateAsync(id, code, await GetCurrentUser())) return NoContent();
             return Ok();
         }
 
@@ -95,7 +94,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.AddAsync(code, await GetCurrentUserIdAsync())) return Ok();
+            if (await _repository.AddAsync(code, await GetCurrentUser())) return Ok();
             return BadRequest();
         }
 
@@ -108,8 +107,8 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.DeleteAsync(id, await GetCurrentUserIdAsync())) return Ok(await _repository.GetAsync(id,
-                await GetCurrentUserIdAsync()));
+            if (await _repository.DeleteAsync(id, await GetCurrentUser())) return Ok(await _repository.GetAsync(id,
+                await GetCurrentUser()));
             return BadRequest();
         }
 
@@ -125,5 +124,7 @@ namespace Garduino.Controllers.api
             var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             return userId?.Id;
         }
+
+        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
     }
 }

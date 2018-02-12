@@ -7,8 +7,8 @@ namespace Garduino.Data
 {
     public interface IDeviceRepository : IBaseRepository<Device>
     {
-        IEnumerable<Device> GetDevice(string device, string userId);
-        Task<bool> DeviceExists(string device, string userId);
+        IEnumerable<Device> GetDevice(string device, ApplicationUser user);
+        Task<bool> DeviceExists(string device, ApplicationUser user);
         bool AreEqual(Device m1, Device m2);
     }
 }

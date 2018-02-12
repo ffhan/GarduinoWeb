@@ -8,8 +8,8 @@ namespace Garduino.Data
 {
     public interface ICodeRepository : IBaseRepository<Code>, IDeviceable<Code>, ITimeable<Code>
     {
-        IEnumerable<Code> GetActive(string userId);
-        Task Complete(Code code, DateTime dateExecuted, string userId);
-        IEnumerable<Code> GetDeviceFromActiveCodes(string device, string userId);
+        IEnumerable<Code> GetActive(ApplicationUser user);
+        Task Complete(Code code, DateTime dateExecuted, ApplicationUser user);
+        IEnumerable<Code> GetDeviceFromActiveCodes(string device, ApplicationUser user);
     }
 }

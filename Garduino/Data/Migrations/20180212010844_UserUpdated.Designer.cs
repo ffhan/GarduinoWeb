@@ -11,9 +11,10 @@ using System;
 namespace Garduino.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180212010844_UserUpdated")]
+    partial class UserUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,7 +89,8 @@ namespace Garduino.Data.Migrations
 
                     b.Property<Guid?>("DeviceId");
 
-                    b.Property<string>("DeviceName");
+                    b.Property<string>("DeviceName")
+                        .IsRequired();
 
                     b.Property<bool>("IsCompleted");
 
@@ -97,8 +99,6 @@ namespace Garduino.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Code");
                 });
@@ -147,8 +147,6 @@ namespace Garduino.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Measure");
                 });
@@ -266,10 +264,6 @@ namespace Garduino.Data.Migrations
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Codes")
                         .HasForeignKey("DeviceId");
-
-                    b.HasOne("Garduino.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Garduino.Models.Device", b =>
@@ -284,10 +278,6 @@ namespace Garduino.Data.Migrations
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Measures")
                         .HasForeignKey("DeviceId");
-
-                    b.HasOne("Garduino.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -9,8 +9,8 @@ namespace Garduino.Data
     public interface IMeasureRepository : IBaseRepository<Measure>, IDeviceable<Measure>, ITimeable<Measure>
     {
         
-        Task<Measure> GetAsync(DateTime dateTime, string userId);
-        Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId);
+        Task<Measure> GetAsync(DateTime dateTime, ApplicationUser user);
+        Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, ApplicationUser user);
         bool AreEqual(Measure m1, Measure m2);
         
     }

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Garduino.Models
+namespace Garduino.Models.Interfaces
 {
     public interface ICriticalOrdering<T> : IEquatable<T>, IComparable<T>
     {
         bool EqualsEf(T other);
         bool Equals(object obj);
-
-        bool IsUser(string userId);
 
         int GetHashCode();
     }

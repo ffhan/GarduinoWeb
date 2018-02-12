@@ -1,0 +1,15 @@
+﻿@model Device
+@{
+    ViewData["Title"] = "See";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>See</h2>
+<div class="row">
+    <div class="col-sm-6 col-md-6">
+        @await Html.PartialAsync("~/Views/Code/Table.cshtml", Model.Codes)
+    </div>
+    <div class="col-sm-6 col-md-6">
+        @await Html.PartialAsync("~/Views/Entry/Table.cshtml", Model.Measures)
+    </div>
+</div>

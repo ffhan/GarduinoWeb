@@ -22,7 +22,7 @@ namespace Garduino.Controllers.front
         private readonly ICodeRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private delegate IEnumerable<Code> RepositoryQuery(string id, string userId); //used to ease search
+        private delegate IEnumerable<Code> RepositoryQuery(string id, ApplicationUser user); //used to ease search
 
         public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
@@ -34,15 +34,15 @@ namespace Garduino.Controllers.front
 
         public async Task<IActionResult> All(string id) => await SearchOperator(_repository.GetDevice, _repository.GetAll, id);
 
-        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<string, IEnumerable<Code>> alternativeSearch, string id)
+        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<ApplicationUser, IEnumerable<Code>> alternativeSearch, string id)
         {
             string trimmed = StringOperations.PrepareForSearch(id);
             if (!string.IsNullOrWhiteSpace(trimmed))
             {
                 ViewData["searchInput"] = trimmed;
-                return View(mainSearch.Invoke(id, await GetCurrentUserIdAsync()));
+                return View(mainSearch.Invoke(id, await GetCurrentUser()));
             }
-            return View(alternativeSearch.Invoke(await GetCurrentUserIdAsync()));
+            return View(alternativeSearch.Invoke(await GetCurrentUser()));
         }
 
         public IActionResult Create() => View();
@@ -52,14 +52,14 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Create([Bind("Action,ActionName,DeviceName")] Code code)
         {
             if (!ModelState.IsValid) return View(code);
-            await _repository.AddAsync(code, await GetCurrentUserIdAsync());
+            await _repository.AddAsync(code, await GetCurrentUser());
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            return View(await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync()));
+            return View(await _repository.GetAsync(id.Value, await GetCurrentUser()));
         }
 
         [HttpPost]
@@ -71,11 +71,11 @@ namespace Garduino.Controllers.front
             if (!ModelState.IsValid) return View(code);
             try
             {
-                await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync());
+                await _repository.UpdateAsync(id, code, await GetCurrentUser());
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repository.ContainsAsync(code, await GetCurrentUserIdAsync()))
+                if (!await _repository.ContainsAsync(code, await GetCurrentUser()))
                 {
                     return NotFound();
                 }
@@ -86,11 +86,13 @@ namespace Garduino.Controllers.front
         
         public async Task<IActionResult> Details(Guid id)
         {
-            var code = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
+            var code = await _repository.GetAsync(id, await GetCurrentUser());
             return View(code);
         }
 
         public string CurrentUserName => User.Identity.Name;
+
+        private async Task<ApplicationUser> GetCurrentUser() => await _userManager.GetUserAsync(HttpContext.User);
 
         private async Task<string> GetCurrentUserIdAsync()
         {
