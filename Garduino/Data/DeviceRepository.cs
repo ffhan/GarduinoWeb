@@ -16,7 +16,6 @@ namespace Garduino.Data
 
         public async Task<bool> AddAsync(Device what, string userId)
         {
-            what.SetUser(userId);
 
             try
             {

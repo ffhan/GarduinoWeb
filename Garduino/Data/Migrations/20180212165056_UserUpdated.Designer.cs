@@ -11,8 +11,8 @@ using System;
 namespace Garduino.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180210162341_AddedDevice")]
-    partial class AddedDevice
+    [Migration("20180212165056_UserUpdated")]
+    partial class UserUpdated
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,8 +94,6 @@ namespace Garduino.Data.Migrations
 
                     b.Property<bool>("IsCompleted");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
@@ -108,13 +106,14 @@ namespace Garduino.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ApplicationUserId");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Device");
                 });
@@ -140,8 +139,6 @@ namespace Garduino.Data.Migrations
                     b.Property<string>("SoilDescription");
 
                     b.Property<int>("SoilMoisture");
-
-                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -263,6 +260,13 @@ namespace Garduino.Data.Migrations
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Codes")
                         .HasForeignKey("DeviceId");
+                });
+
+            modelBuilder.Entity("Garduino.Models.Device", b =>
+                {
+                    b.HasOne("Garduino.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Devices")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Garduino.Models.Measure", b =>

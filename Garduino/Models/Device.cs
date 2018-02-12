@@ -22,14 +22,12 @@ namespace Garduino.Models
         [DisplayName("Device name")]
         public string Name { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         public virtual ICollection<Measure> Measures { get; set; }
 
         public virtual ICollection<Code> Codes { get; set; }
 
-        public void SetUser(string id) => UserId = id;
         public void Update(Device code)
         {
             Name = code.Name;
@@ -40,7 +38,7 @@ namespace Garduino.Models
             return Equals(other);
         }
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+        public bool IsUser(string userId) => StringOperations.IsFromUser(ApplicationUser.Id, userId);
 
         public int CompareTo(Device other) => String.Compare(Name, other.Name, StringComparison.Ordinal);
 

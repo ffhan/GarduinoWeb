@@ -34,16 +34,12 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
-
         [Required]
         [MinLength(4)]
         public string DeviceName { get; set; }
 
         public virtual Device Device { get; set; }
 
-        public void SetUser(string id) => UserId = id;
 
         public bool EqualsEf(Measure measure)
         {
@@ -60,7 +56,7 @@ namespace Garduino.Models
            return Equals(obj as Measure);
         }
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+        public bool IsUser(string userId) => StringOperations.IsFromUser(Device.ApplicationUser.Id, userId);
 
         public bool Equals(Measure other)
         {
@@ -112,7 +108,7 @@ namespace Garduino.Models
         {
             var hashCode = -1004238049;
             hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UserId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Device>.Default.GetHashCode(Device);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceName);
             return hashCode;
         }

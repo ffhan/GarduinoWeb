@@ -36,9 +36,6 @@ namespace Garduino.Models
         [DisplayName("Is it completed?")]
         public bool IsCompleted { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
-
         [Required]
         public string DeviceName { get; set; }
 
@@ -51,7 +48,6 @@ namespace Garduino.Models
             DeviceName = codeViewModel.DeviceName;
         }
 
-        public void SetUser(string id) => UserId = id;
 
         public void Complete(DateTime dateExecuted)
         {
@@ -77,7 +73,7 @@ namespace Garduino.Models
             }
         }
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+        public bool IsUser(string userId) => StringOperations.IsFromUser(Device.ApplicationUser.Id, userId);
 
         public bool IsFromDevice(string device)
         {

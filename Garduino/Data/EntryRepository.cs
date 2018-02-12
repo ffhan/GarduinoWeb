@@ -18,7 +18,6 @@ namespace Garduino.Data
 
         public async Task<bool> AddAsync(Measure measure, string userId)
         {
-            measure.SetUser(userId);
             bool tmp = await ContainsAsync(measure, userId);
             if (!tmp)
             {
@@ -31,33 +30,33 @@ namespace Garduino.Data
 
         public IEnumerable<Measure> GetAll(string userId)
         {
-            return _context.Measure.Where(g => g.UserId.Equals(userId)).OrderByDescending(g => g.DateTime);
+            return _context.Measure.Where(g => g.Device.ApplicationUser.Id.Equals(userId)).OrderByDescending(g => g.DateTime);
         }
 
         public IEnumerable<Measure> GetDevice(string device, string userId)
         {
-            return _context.Measure.Where(g => g.IsFromDevice(device) && g.UserId.Equals(userId));
+            return _context.Measure.Where(g => g.IsFromDevice(device) && g.Device.ApplicationUser.Id.Equals(userId));
         }
 
         public async Task<Measure> GetAsync(Measure measure, string userId)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.UserId.Equals(userId));
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.Device.ApplicationUser.Id.Equals(userId));
         }
         public async Task<Measure> GetAsync(Guid id, string userId)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && g.UserId.Equals(userId));
+            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && g.Device.ApplicationUser.Id.Equals(userId));
         }
 
         public async Task<Measure> GetAsync(DateTime dateTime, string userId)
         {
-            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && g.UserId.Equals(userId));
+            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && g.Device.ApplicationUser.Id.Equals(userId));
             return tmp;
         }
 
         public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
         {
             return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
-            && m.UserId.Equals(userId));
+            && m.Device.ApplicationUser.Id.Equals(userId));
         }
 
         public async Task<bool> UpdateAsync(Guid id, Measure measure, string userId)
@@ -86,12 +85,12 @@ namespace Garduino.Data
 
         public async Task<bool> ContainsAsync(Measure measure, string userId)
         {
-            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.UserId.Equals(userId));
+            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.Device.ApplicationUser.Id.Equals(userId));
         }
 
         public async Task<bool> ContainsAsync(Guid id, string userId)
         {
-            return await _context.Measure.AnyAsync(g => g.UserId.Equals(userId) && g.Id.Equals(id));
+            return await _context.Measure.AnyAsync(g => g.Device.ApplicationUser.Id.Equals(userId) && g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id, string userId)
