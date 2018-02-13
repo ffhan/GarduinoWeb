@@ -112,5 +112,10 @@ namespace Garduino.Models
         {
             Device = device;
         }
+
+        public bool IsFromDevice(Device device)
+        {
+            return StringOperations.IsFromDevice(Device.Name, device.Name);
+        }
     }
 }

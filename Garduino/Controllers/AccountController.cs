@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Extensions;
 using Garduino.Models;
 using Garduino.Models.AccountViewModels;
@@ -18,16 +20,18 @@ namespace Garduino.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRepository _userRepository;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
-        public AccountController(
+        public AccountController(IUserRepository userRepository,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
+            _userRepository = userRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -221,6 +225,8 @@ namespace Garduino.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    var user2 = new User { Id = user.Id, Devices = new HashSet<Device>() };
+                    await _userRepository.AddAsync(user2);
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

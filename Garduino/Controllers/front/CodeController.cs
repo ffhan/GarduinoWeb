@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Garduino.Models.ViewModels;
 using GarduinoUniversal;
@@ -15,51 +16,45 @@ using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
 namespace Garduino.Controllers.front
 {
+
     [Authorize] //TODO:  create Device model.
     public class CodeController : Controller
     {
 
         private readonly ICodeRepository _repository;
+        private readonly IDeviceRepository _deviceRepository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private delegate IEnumerable<Code> RepositoryQuery(string id, string userId); //used to ease search
 
-        public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
+        public CodeController(IUserRepository userRepository, IDeviceRepository deviceRepository, 
+            ICodeRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
+            _deviceRepository = deviceRepository;
             _repository = repository;
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string id) => await SearchOperator(_repository.GetDeviceFromActiveCodes, _repository.GetActive, id);
+        public async Task<IActionResult> Index(Guid deviceId) => View((await GetDevice(deviceId)).Codes);
 
-        public async Task<IActionResult> All(string id) => await SearchOperator(_repository.GetDevice, _repository.GetAll, id);
-
-        private async Task<IActionResult> SearchOperator(RepositoryQuery mainSearch, Func<string, IEnumerable<Code>> alternativeSearch, string id)
-        {
-            string trimmed = StringOperations.PrepareForSearch(id);
-            if (!string.IsNullOrWhiteSpace(trimmed))
-            {
-                ViewData["searchInput"] = trimmed;
-                return View(mainSearch.Invoke(id, await GetCurrentUserIdAsync()));
-            }
-            return View(alternativeSearch.Invoke(await GetCurrentUserIdAsync()));
-        }
+        public async Task<IActionResult> All(Guid deviceId) => View((await GetDevice(deviceId)).Codes);
 
         public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Action,ActionName,DeviceName")] Code code)
+        public async Task<IActionResult> Create(Guid id, [Bind("Action,ActionName,DeviceName")] Code code)
         {
             if (!ModelState.IsValid) return View(code);
-            //await _repository.AddAsync(code, await GetCurrentUserAsync());
+            await _repository.AddAsync(code, await GetDevice(id));
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            return View(await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync()));
+            return View(await _repository.GetAsync(id.Value, await GetDevice(id.Value)));
         }
 
         [HttpPost]
@@ -71,11 +66,11 @@ namespace Garduino.Controllers.front
             if (!ModelState.IsValid) return View(code);
             try
             {
-                await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync());
+                await _repository.UpdateAsync(id, code, await GetDevice(id));
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repository.ContainsAsync(code, await GetCurrentUserIdAsync()))
+                if (!await _repository.ContainsAsync(code, await GetDevice(id)))
                 {
                     return NotFound();
                 }
@@ -86,13 +81,16 @@ namespace Garduino.Controllers.front
         
         public async Task<IActionResult> Details(Guid id)
         {
-            var code = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
+            var code = await _repository.GetAsync(id, await GetDevice(id));
             return View(code);
         }
 
         public string CurrentUserName => User.Identity.Name;
 
-        private async Task<ApplicationUser> GetCurrentUserAsync() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<Device> GetDevice(Guid id) =>
+            await _deviceRepository.GetDevice(id, await GetCurrentUserAsync());
+
+        private async Task<User> GetCurrentUserAsync() => await _userRepository.GetAsync(await GetCurrentUserIdAsync());
 
         private async Task<string> GetCurrentUserIdAsync()
         {

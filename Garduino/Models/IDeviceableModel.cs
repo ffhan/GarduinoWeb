@@ -11,6 +11,6 @@ namespace Garduino.Models
 
         void SetDevice(Device device);
 
-        bool IsFromDevice(string device);
+        bool IsFromDevice(Device device);
     }
 }

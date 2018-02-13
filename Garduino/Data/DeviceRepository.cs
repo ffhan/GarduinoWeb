@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using GarduinoUniversal;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace Garduino.Data
 
         public DeviceRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<bool> AddAsync(Device what, ApplicationUser user)
+        public async Task<bool> AddAsync(Device what, User user)
         {
             what.SetUser(user);
             try
@@ -29,32 +30,33 @@ namespace Garduino.Data
             return true;
         }
 
-        public IEnumerable<Device> GetAll(ApplicationUser user)
+        public IEnumerable<Device> GetAll(User user)
         {
-            return _context.Device.Where(g => g.IsUser(user));
+            return _context.Device.Include(c => c.User).Where(g => g.IsUser(user));
         }
 
-        public IEnumerable<Device> GetDevice(string device, ApplicationUser user)
-        {
-            return _context.Device.Where(g => g.Name.Equals(device) && g.IsUser(user));
-        }
+        public async Task<Device> GetDevice(Guid device, User user) =>
+            await _context.Device.Include(c => c.User).FirstOrDefaultAsync(g => g.Id.Equals(device) && g.IsUser(user));
 
-        public async Task<bool> DeviceExistsAsync(string device, ApplicationUser user)
+        public async Task<Device> GetDevice(string name, User user) =>
+            user.Devices.FirstOrDefault(g => StringOperations.IsFromDevice(g.Name, name));
+
+        public async Task<bool> DeviceExistsAsync(string device, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && StringOperations.IsFromDevice(g.Name, device));
         }
 
-        public async Task<Device> GetAsync(Guid id, ApplicationUser user)
+        public async Task<Device> GetAsync(Guid id, User user)
         {
-            return await _context.Device.FirstOrDefaultAsync(g => g.Id.Equals(id) && g.IsUser(user));
+            return await _context.Device.Include(c => c.User).FirstOrDefaultAsync(g => g.Id.Equals(id) && g.IsUser(user));
         }
 
-        public async Task<Device> GetAsync(Device what, ApplicationUser user)
+        public async Task<Device> GetAsync(Device what, User user)
         {
-            return await _context.Device.FirstOrDefaultAsync(g => g.Equals(what) && g.IsUser(user));
+            return await _context.Device.Include(c => c.User).FirstOrDefaultAsync(g => g.Equals(what) && g.IsUser(user));
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Device what, ApplicationUser user)
+        public async Task<bool> UpdateAsync(Guid id, Device what, User user)
         {
             var device = await GetAsync(id, user);
             if (device is null) return false;
@@ -78,17 +80,17 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Device what, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Device what, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Equals(what));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, ApplicationUser user)
+        public async Task<bool> ContainsAsync(Guid id, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, ApplicationUser user)
+        public async Task<bool> DeleteAsync(Guid id, User user)
         {
             try
             {
@@ -102,7 +104,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Device what, ApplicationUser user)
+        public async Task<Guid> GetId(Device what, User user)
         {
             Device device = await _context.Device.FirstOrDefaultAsync(g => g.IsUser(user) && Equals(what));
             return device.Id;
@@ -124,7 +126,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task AddAllAsync(ISet<Device> all, ApplicationUser user)
+        public async Task AddAllAsync(ISet<Device> all, User user)
         {
             foreach (Device device in all)
             {

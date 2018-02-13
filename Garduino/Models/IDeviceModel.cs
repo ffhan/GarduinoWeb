@@ -7,7 +7,7 @@ namespace Garduino.Models
 {
     interface IDeviceModel : IBaseModel<Device>
     {
-        void SetUser(ApplicationUser user);
-        bool IsUser(ApplicationUser user);
+        void SetUser(User user);
+        bool IsUser(User user);
     }
 }

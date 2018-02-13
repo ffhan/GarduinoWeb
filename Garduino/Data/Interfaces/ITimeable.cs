@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Garduino.Data
+﻿namespace Garduino.Data.Interfaces
 {
-    public interface ITimeable<T>
+    public interface ITimeable<T, U>
     {
-        T GetLatest(string userId);
+        T GetLatest(U fromWhere);
     }
 }

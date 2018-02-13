@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using GarduinoUniversal;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,8 @@ namespace Garduino.Data
 
         public async Task<bool> AddAsync(Measure measure, Device device)
         {
-            bool tmp = await ContainsAsync(measure, device.Name);
+            bool tmp = await ContainsAsync(measure, device);
+            measure.SetDevice(device);
             if (!tmp)
             {
                 _context.Measure.Add(measure);
@@ -29,40 +31,33 @@ namespace Garduino.Data
             return false;
         }
 
-        public IEnumerable<Measure> GetAll(string userId)
+        public IEnumerable<Measure> GetAll(Device device)
         {
-            return _context.Measure.Where(g => g.Device.ApplicationUser.Id.Equals(userId)).OrderByDescending(g => g.DateTime);
+            return device.Measures.OrderByDescending(g => g.DateTime);
         }
 
-        public IEnumerable<Measure> GetDevice(string device, string userId)
+        public async Task<Measure> GetAsync(Measure measure, Device device)
         {
-            return _context.Measure.Where(g => g.IsFromDevice(device) && g.Device.ApplicationUser.Id.Equals(userId));
+            return device.Measures.FirstOrDefault(g => g.Equals(measure));
+        }
+        public async Task<Measure> GetAsync(Guid id, Device device)
+        {
+            return device.Measures.FirstOrDefault(g => g.Id == id);
         }
 
-        public async Task<Measure> GetAsync(Measure measure, string userId)
+        public async Task<Measure> GetAsync(DateTime dateTime, Device device)
         {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Equals(measure) && g.Device.ApplicationUser.Id.Equals(userId));
-        }
-        public async Task<Measure> GetAsync(Guid id, string userId)
-        {
-            return await _context.Measure.FirstOrDefaultAsync(g => g.Id == id && g.Device.ApplicationUser.Id.Equals(userId));
+            return device.Measures.FirstOrDefault(g => g.DateTime.Equals(dateTime));
         }
 
-        public async Task<Measure> GetAsync(DateTime dateTime, string userId)
+        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device)
         {
-            var tmp = await _context.Measure.FirstOrDefaultAsync(g => g.DateTime.Equals(dateTime) && g.Device.ApplicationUser.Id.Equals(userId));
-            return tmp;
+            return device.Measures.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0);
         }
 
-        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
+        public async Task<bool> UpdateAsync(Guid id, Measure measure, Device device)
         {
-            return _context.Measure.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0
-            && m.Device.ApplicationUser.Id.Equals(userId));
-        }
-
-        public async Task<bool> UpdateAsync(Guid id, Measure measure, string userId)
-        {
-            Measure mes = await GetAsync(id, userId);
+            Measure mes = await GetAsync(id, device);
             if (mes is null) return false;
             mes.Update(measure);
             _context.Entry(mes).State = EntityState.Modified;
@@ -72,7 +67,7 @@ namespace Garduino.Data
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await ContainsAsync(mes, userId))
+                if (!await ContainsAsync(mes, device))
                 {
                     return false;
                 }
@@ -84,21 +79,21 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Measure measure, string userId)
+        public async Task<bool> ContainsAsync(Measure measure, Device device)
         {
-            return await _context.Measure.AnyAsync(g => g.EqualsEf(measure) && g.Device.ApplicationUser.Id.Equals(userId));
+            return device.Measures.Any(g => g.EqualsEf(measure));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, string deviceName)
+        public async Task<bool> ContainsAsync(Guid id, Device device)
         {
-            return await _context.Measure.AnyAsync(g => StringOperations.IsFromDevice(g.Device.Name, deviceName) && g.Id.Equals(id));
+            return device.Measures.Any(g => StringOperations.IsFromDevice(g.Device.Name, device.Name) && g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, Device device)
         {
             try
             {
-                _context.Measure.Remove(await GetAsync(id, userId));
+                _context.Measure.Remove(await GetAsync(id, device));
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -108,9 +103,9 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Measure measure, string userId)
+        public async Task<Guid> GetId(Measure measure, Device device)
         {
-            Measure mes = await GetAsync(measure.DateTime, userId);
+            Measure mes = await GetAsync(measure.DateTime, device);
             return mes.Id;
         }
 
@@ -133,16 +128,16 @@ namespace Garduino.Data
             return true;
         }
 
-        public Measure GetLatest(string userId)
+        public Measure GetLatest(Device device)
         {
-            return GetAll(userId).FirstOrDefault();
+            return GetAll(device).FirstOrDefault();
         }
 
-        public async Task AddAllAsync(ISet<Measure> all, string userId)
+        public async Task AddAllAsync(ISet<Measure> all, Device device)
         {
             foreach (var measure in all)
             {
-                //await AddAsync(measure, userId);
+                await AddAsync(measure, device);
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Garduino.Models.ViewModels;
 using GarduinoUniversal;
@@ -24,10 +25,12 @@ namespace Garduino.Controllers.front
          */
     {
         private readonly IDeviceRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DeviceController(IDeviceRepository repository, UserManager<ApplicationUser> userManager)
+        public DeviceController(IUserRepository userRepository, IDeviceRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
         }
@@ -155,7 +158,7 @@ namespace Garduino.Controllers.front
             return await _repository.ContainsAsync(id, await GetCurrentUserAsync());
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<User> GetCurrentUserAsync() => await _userRepository.GetAsync(await GetCurrentUserIdAsync());
 
         private async Task<string> GetCurrentUserIdAsync()
         {

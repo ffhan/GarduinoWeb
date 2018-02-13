@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Garduino.Data;
+using Garduino.Data.Interfaces;
 using Garduino.Data.Migrations;
 using Garduino.Models;
 using Garduino.Services;
@@ -50,6 +51,7 @@ namespace Garduino
             services.AddTransient<IMeasureRepository, EntryRepository>();
             services.AddTransient<ICodeRepository, CodeRepository>();
             services.AddTransient<IDeviceRepository, DeviceRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

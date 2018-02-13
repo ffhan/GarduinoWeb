@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Garduino.Data;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
-{
+{/*
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [Route("api/Code")]
@@ -32,7 +33,7 @@ namespace Garduino.Controllers.api
         [HttpGet("all")]
         public async Task<IEnumerable<Code>> GetCode()
         {
-            var t = _repository.GetAll(await GetCurrentUserIdAsync());
+            var t = _repository.GetAll(await ());
             return t;
         }
 
@@ -120,10 +121,11 @@ namespace Garduino.Controllers.api
             return BadRequest();
         }
 
+
         private async Task<string> GetCurrentUserIdAsync()
         {
             var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             return userId?.Id;
         }
-    }
+    }*/
 }

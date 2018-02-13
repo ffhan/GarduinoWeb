@@ -75,7 +75,7 @@ namespace Garduino.Models
             }
         }
 
-        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);
+        public bool IsFromDevice(Device device) => StringOperations.IsFromDevice(Device.Name, device.Name);
         //TODO: see if it's smart to do this with name instead of id
 
         public Code() { }

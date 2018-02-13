@@ -22,7 +22,7 @@ namespace Garduino.Models
         [DisplayName("Device name")]
         public string Name { get; set; }
 
-        public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual User User { get; set; }
 
         public virtual ICollection<Measure> Measures { get; set; }
 
@@ -33,9 +33,9 @@ namespace Garduino.Models
             Name = code.Name;
         }
 
-        public void SetUser(ApplicationUser user) => ApplicationUser = user;
+        public void SetUser(User user) => User = user;
 
-        public bool IsUser(ApplicationUser user) => StringOperations.IsFromUser(ApplicationUser.Id, user.Id);
+        public bool IsUser(User user) => StringOperations.IsFromUser(User?.Id, user.Id);
 
     }
 }

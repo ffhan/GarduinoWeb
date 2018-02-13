@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Models;
 
-namespace Garduino.Data
+namespace Garduino.Data.Interfaces
 {
-    public interface IMeasureRepository : IBaseRepository<Measure, string>, IDeviceable<Measure>, ITimeable<Measure>
+    public interface IMeasureRepository : IBaseRepository<Measure, Device>, IDeviceable<Measure>, ITimeable<Measure, Device>
     {
         
-        Task<Measure> GetAsync(DateTime dateTime, string userId);
-        Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId);
+        Task<Measure> GetAsync(DateTime dateTime, Device device);
+        Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device);
         bool AreEqual(Measure m1, Measure m2);
         
     }

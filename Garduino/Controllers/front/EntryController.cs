@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garduino.Data;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,32 +17,31 @@ namespace Garduino.Controllers.front
     public class EntryController : Controller
     {
         private readonly IMeasureRepository _repository;
+        private readonly IDeviceRepository _deviceRepository;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EntryController(IMeasureRepository repository, UserManager<ApplicationUser> userManager)
+        public EntryController(IUserRepository userRepository, IDeviceRepository deviceRepository, IMeasureRepository repository, 
+            UserManager<ApplicationUser> userManager)
         {
+            _userRepository = userRepository;
+            _deviceRepository = deviceRepository;
             _repository = repository;
             _userManager = userManager;
         }
 
         // GET: Entry
-        public async Task<IActionResult> Index(string id)
+        [Route("{deviceId}")]
+        public async Task<IActionResult> Index(Guid deviceId)
         {
-            string trimmed = (id ?? "").Trim();
-            if (!string.IsNullOrWhiteSpace(trimmed))
-            {
-                ViewData["searchInput"] = trimmed;
-                return View(_repository.GetDevice(trimmed, await GetCurrentUserIdAsync()));
-            }
-
-            return View(_repository.GetAll(await GetCurrentUserIdAsync()));
+            return View(_repository.GetAll(await GetDevice(deviceId)));
         }
 
         // GET: Entry/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null) return NotFound();
-            return View(await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync()));
+            return View(await _repository.GetAsync(id.Value, await GetDevice(id.Value)));
         }
 
         // GET: Entry/Create
@@ -66,7 +66,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(id.Value, await GetDevice(id.Value));
             if (measure == null)
             {
                 return NotFound();
@@ -86,7 +86,7 @@ namespace Garduino.Controllers.front
             if (!ModelState.IsValid) return View(measure);
             try
             {
-                await _repository.UpdateAsync(id, measure, await GetCurrentUserIdAsync());
+                await _repository.UpdateAsync(id, measure, await GetDevice(id));
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,7 +103,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetCurrentUserIdAsync());
+            var measure = await _repository.GetAsync(id.Value, await GetDevice(id.Value));
             if (measure == null) return NotFound();
             return View(measure);
         }
@@ -113,17 +113,20 @@ namespace Garduino.Controllers.front
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _repository.DeleteAsync(id, await GetCurrentUserIdAsync());
+            await _repository.DeleteAsync(id, await GetDevice(id));
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> MeasureExists(Guid id)
         {
-            var userId = await GetCurrentUserIdAsync();
-            return await _repository.ContainsAsync(await _repository.GetAsync(id, userId), userId);
+            var device = await GetDevice(id);
+            return await _repository.ContainsAsync(await _repository.GetAsync(id, device), device);
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync() => await _userManager.GetUserAsync(HttpContext.User);
+        private async Task<Device> GetDevice(Guid id) => 
+            await _deviceRepository.GetDevice(id, await GetCurrentUserAsync());
+
+        private async Task<User> GetCurrentUserAsync() => await _userRepository.GetAsync(await GetCurrentUserIdAsync());
 
         private async Task<string> GetCurrentUserIdAsync()
         {

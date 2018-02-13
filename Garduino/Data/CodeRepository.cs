@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,66 +32,60 @@ namespace Garduino.Data
             return true;
         }
 
-        public IEnumerable<Code> GetAll(string userId)
-        {
-            return _context.Code.Where(g => g.Device.ApplicationUser.Id.Equals(userId)).OrderByDescending(g => g);
+        public IEnumerable<Code> GetAll(Device device)
+        {//TODO: make sense of this
+            return device.Codes;
         }
 
-        public Code GetLatest(string userId)
+        public Code GetLatest(Device device)
         {
-            return GetAll(userId)?.FirstOrDefault(g => !g.IsCompleted);
+            return device.Codes.OrderByDescending(g => g).Reverse().FirstOrDefault();
         }
 
-        public IEnumerable<Code> GetActive(string userId) => _context.Code.Where(g => g.Device.ApplicationUser.Id.Equals(userId) && !g.IsCompleted).OrderByDescending(g => g);
+        public IEnumerable<Code> GetActive(Device device) => device.Codes.Where(g => !g.IsCompleted);
 
-        public async Task Complete(Code code, DateTime dateExecuted, string userId)
+        public async Task Complete(Code code, DateTime dateExecuted, Device device)
         {
             code.Complete(dateExecuted);
-            await UpdateAsync(code.Id, code, userId);
+            await UpdateAsync(code.Id, code, device);
         }
 
-        public async Task Complete(Guid id, DateTime dateExecuted, string userId)
+        public async Task Complete(Guid id, DateTime dateExecuted, Device device)
         {
-            Code code = await GetAsync(id, userId);
+            Code code = await GetAsync(id, device);
             code.Complete(dateExecuted);
-            await UpdateAsync(id, code, userId);
+            await UpdateAsync(id, code, device);
         }
 
-        public IEnumerable<Code> GetDeviceFromActiveCodes(string device, string userId)
+        public IEnumerable<Code> GetActiveCodesFromDevice(Device device)
         {
-            return _context.Code.Where(g => g.Device.ApplicationUser.Id.Equals(userId) && g.IsFromDevice(device) && !g.IsCompleted);
+            return device.Codes.Where(g => !g.IsCompleted);
         }
 
-        public IEnumerable<Code> GetDevice(string device, string userId)
+        public async Task<Code> GetAsync(Guid id, Device device)
         {
-            return _context.Code.Where(g => g.Device.ApplicationUser.Id.Equals(userId) && g.IsFromDevice(device));
+            return device.Codes.FirstOrDefault(g => g.Id.Equals(id));
         }
 
-        public async Task<Code> GetAsync(Guid id, string userId)
+        public async Task<Code> GetAsync(DateTime dateTime, Device device)
         {
-            return await _context.Code.FirstOrDefaultAsync(g => g.Id.Equals(id) && g.Device.ApplicationUser.Id.Equals(userId));
+            return device.Codes.FirstOrDefault(g => g.DateArrived.Equals(dateTime));
         }
 
-        public async Task<Code> GetAsync(DateTime dateTime, string userId)
-        {
-            return await _context.Code.FirstOrDefaultAsync(g =>
-                g.DateArrived.Equals(dateTime) && g.Device.ApplicationUser.Id.Equals(userId));
-        }
-
-        public async Task<Code> GetAsync(Code what, string userId)
+        public async Task<Code> GetAsync(Code what, Device device)
         {//TODO: SWITCH TO STRINGOPERATIONS
-            return await _context.Code.FirstOrDefaultAsync(g => g.Equals(what) && g.Device.ApplicationUser.Id.Equals(userId));
+            return device.Codes.FirstOrDefault(g => g.Equals(what));
         }
 
-        public async Task<IEnumerable<Code>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, string userId)
+        public async Task<IEnumerable<Code>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device)
         {
-            return _context.Code.Where(g => g.DateArrived.CompareTo(dateTime1) >= 0 &&
+            return device.Codes.Where(g => g.DateArrived.CompareTo(dateTime1) >= 0 &&
                                                   g.DateArrived.CompareTo(dateTime2) <= 0);
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Code what, string userId)
+        public async Task<bool> UpdateAsync(Guid id, Code what, Device device)
         {
-            Code code = await GetAsync(id, userId);
+            Code code = await GetAsync(id, device);
             if (code is null) return false;
             code.Update(what);
             _context.Entry(code).State = EntityState.Modified;
@@ -100,7 +95,7 @@ namespace Garduino.Data
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await ContainsAsync(code, userId))
+                if (!await ContainsAsync(code, device))
                 {
                     return false;
                 }
@@ -112,21 +107,21 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Code what, string userId)
+        public async Task<bool> ContainsAsync(Code what, Device device)
         {
-            return await _context.Code.AnyAsync(g => g.IsUser(userId) && g.Equals(what));
+            return device.Codes.Any(g => g.Equals(what));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, string userId)
+        public async Task<bool> ContainsAsync(Guid id, Device device)
         {
-            return await _context.Code.AnyAsync(g => g.IsUser(userId) && g.Id.Equals(id));
+            return device.Codes.Any(g => g.Id.Equals(id));
         }
 
-        public async Task<bool> DeleteAsync(Guid id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, Device device)
         {
             try
             {
-                _context.Code.Remove(await GetAsync(id, userId));
+                _context.Code.Remove(await GetAsync(id, device));
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -136,9 +131,9 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<Guid> GetId(Code what, string userId)
+        public async Task<Guid> GetId(Code what, Device device)
         {
-            Code mes = await GetAsync(what.DateArrived, userId);
+            Code mes = await GetAsync(what.DateArrived, device);
             return mes.Id;
         }
 
@@ -161,11 +156,11 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task AddAllAsync(ISet<Code> all, string userId)
+        public async Task AddAllAsync(ISet<Code> all, Device device)
         {
             foreach(var code in all)
             {
-                await AddAsync(code, userId);
+                await AddAsync(code, device);
             }
         }
     }
