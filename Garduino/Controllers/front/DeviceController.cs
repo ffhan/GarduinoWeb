@@ -25,11 +25,14 @@ namespace Garduino.Controllers.front
          */
     {
         private readonly IDeviceRepository _repository;
+        private AppState _appState;
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DeviceController(IUserRepository userRepository, IDeviceRepository repository, UserManager<ApplicationUser> userManager)
+        public DeviceController(AppState appState, IUserRepository userRepository, 
+            IDeviceRepository repository, UserManager<ApplicationUser> userManager)
         {
+            _appState = appState;
             _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
@@ -49,7 +52,7 @@ namespace Garduino.Controllers.front
                 return NotFound();
             }
 
-            var device = await _repository.GetAsync(id.Value, await GetCurrentUserAsync());
+            var device = await _repository.GetAsync(id.Value);
             if (device == null)
             {
                 return NotFound();
@@ -84,7 +87,7 @@ namespace Garduino.Controllers.front
                 return NotFound();
             }
 
-            var device = await _repository.GetAsync(id.Value, await GetCurrentUserAsync());
+            var device = await _repository.GetAsync(id.Value);
             if (device == null)
             {
                 return NotFound();
@@ -108,7 +111,7 @@ namespace Garduino.Controllers.front
             {
                 try
                 {
-                    await _repository.UpdateAsync(id, device, await GetCurrentUserAsync());
+                    await _repository.UpdateAsync(id, device);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -134,7 +137,7 @@ namespace Garduino.Controllers.front
                 return NotFound();
             }
 
-            var device = await _repository.GetAsync(id.Value, await GetCurrentUserAsync());
+            var device = await _repository.GetAsync(id.Value);
             if (device == null)
             {
                 return NotFound();
@@ -148,8 +151,8 @@ namespace Garduino.Controllers.front
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var device = await _repository.GetAsync(id, await GetCurrentUserAsync());
-            await _repository.DeleteAsync(id, await GetCurrentUserAsync());
+            var device = await _repository.GetAsync(id);
+            await _repository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -164,6 +167,12 @@ namespace Garduino.Controllers.front
         {
             var userId = await _userManager.GetUserAsync(HttpContext.User);
             return userId?.Id;
+        }
+
+        public async Task<IActionResult> SendToEntry(Guid deviceId)
+        {
+            _appState.CurrentDeviceId = deviceId;
+            return RedirectToAction("Index", "Entry");
         }
 
         [AcceptVerbs("Get", "Post")]

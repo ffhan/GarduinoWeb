@@ -19,11 +19,14 @@ namespace Garduino.Controllers.front
         private readonly IMeasureRepository _repository;
         private readonly IDeviceRepository _deviceRepository;
         private readonly IUserRepository _userRepository;
+        private readonly AppState _appState;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EntryController(IUserRepository userRepository, IDeviceRepository deviceRepository, IMeasureRepository repository, 
+
+        public EntryController(AppState appState, IUserRepository userRepository, IDeviceRepository deviceRepository, IMeasureRepository repository, 
             UserManager<ApplicationUser> userManager)
         {
+            _appState = appState;
             _userRepository = userRepository;
             _deviceRepository = deviceRepository;
             _repository = repository;
@@ -31,21 +34,23 @@ namespace Garduino.Controllers.front
         }
 
         // GET: Entry
-        [Route("{deviceId}")]
-        public async Task<IActionResult> Index(Guid deviceId)
+        public async Task<IActionResult> Index()
         {
-            return View(_repository.GetAll(await GetDevice(deviceId)));
+            return View(_repository.GetAll(await GetCurrentDeviceAsync()));
         }
 
         // GET: Entry/Details/5
         public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null) return NotFound();
-            return View(await _repository.GetAsync(id.Value, await GetDevice(id.Value)));
+        { 
+            if (!id.HasValue) return NotFound();
+            return View(await _repository.GetAsync(id.Value));
         }
 
         // GET: Entry/Create
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            return View();
+        }
 
         // POST: Entry/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -56,7 +61,7 @@ namespace Garduino.Controllers.front
         {
             if (ModelState.IsValid)
             {
-                //await _repository.AddAsync(measure, );
+                await _repository.AddAsync(measure, await GetCurrentDeviceAsync());
                 return RedirectToAction(nameof(Index));
             }
             return View(measure);
@@ -66,11 +71,8 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetDevice(id.Value));
-            if (measure == null)
-            {
-                return NotFound();
-            }
+            var measure = await _repository.GetAsync(id.Value);
+            if (measure == null) return NotFound();
             return View(measure);
         }
 
@@ -82,11 +84,10 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Edit(Guid id, [Bind("Id, DateTime,SoilMoisture,SoilDescription,AirHumidity,AirTemperature,LightState,DeviceName")] Measure measure)
         {
             if (id != measure.Id) return NotFound();
-
             if (!ModelState.IsValid) return View(measure);
             try
             {
-                await _repository.UpdateAsync(id, measure, await GetDevice(id));
+                await _repository.UpdateAsync(id, measure);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,7 +104,7 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null) return NotFound();
-            var measure = await _repository.GetAsync(id.Value, await GetDevice(id.Value));
+            var measure = await _repository.GetAsync(id.Value);
             if (measure == null) return NotFound();
             return View(measure);
         }
@@ -113,20 +114,28 @@ namespace Garduino.Controllers.front
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _repository.DeleteAsync(id, await GetDevice(id));
+            await _repository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> MeasureExists(Guid id)
         {
-            var device = await GetDevice(id);
-            return await _repository.ContainsAsync(await _repository.GetAsync(id, device), device);
+            return await _repository.ContainsAsync(id, await GetCurrentDeviceAsync());
         }
 
-        private async Task<Device> GetDevice(Guid id) => 
-            await _deviceRepository.GetDevice(id, await GetCurrentUserAsync());
+        private async Task<Device> _GetDeviceAsync(Guid deviceId) => 
+            await _deviceRepository.GetAsync(deviceId);
 
         private async Task<User> GetCurrentUserAsync() => await _userRepository.GetAsync(await GetCurrentUserIdAsync());
+
+        private async Task<Device> GetDeviceAsync(Guid? deviceId)
+        {
+            if (deviceId == null) return null;
+            var device = await _GetDeviceAsync(deviceId.Value);
+            return device ?? null;
+        }
+
+        private async Task<Device> GetCurrentDeviceAsync() => await GetDeviceAsync(_appState.CurrentDeviceId);
 
         private async Task<string> GetCurrentUserIdAsync()
         {

@@ -62,7 +62,6 @@ namespace Garduino.Models
         {
             Action = code.Action;
             ActionName = code.ActionName;
-            Device = code.Device;
             if (IsCompleted != code.IsCompleted && code.IsCompleted)
             {
                 DateCompleted = DateTime.Now;

@@ -54,6 +54,7 @@ namespace Garduino
             services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<AppState>();
 
             services.AddAuthentication()
                 .AddCookie(cfg => cfg.SlidingExpiration = true)
