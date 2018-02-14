@@ -20,7 +20,7 @@ namespace Garduino.Data
 
         public async Task<bool> AddAsync(Measure measure, Device device)
         {
-            bool tmp = await ContainsAsync(measure, device);
+            bool tmp = await IsContainedAsync(measure, device);
             measure.SetDevice(device);
             if (!tmp)
             {
@@ -61,16 +61,21 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Measure measure, Device device)
+        public async Task<bool> IsContainedAsync(Measure measure, Device device)
         {
             if (device.Measures == null) return false;
             return device.Measures.Any(g => g.EqualsEf(measure));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, Device device)
+        public async Task<bool> IsContainedAsync(Guid id, Device device)
         {
             if (device.Measures == null) return false;
             return device.Measures.Any(g => StringOperations.IsFromDevice(g.Device.Name, device.Name) && g.Id.Equals(id));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id)
+        {
+            return await _context.Measure.AnyAsync(g => g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id)

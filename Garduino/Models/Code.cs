@@ -61,7 +61,6 @@ namespace Garduino.Models
         public void Update(Code code)
         {
             Action = code.Action;
-            ActionName = code.ActionName;
             if (IsCompleted != code.IsCompleted && code.IsCompleted)
             {
                 DateCompleted = DateTime.Now;

@@ -26,7 +26,8 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-controller="Device" asp-action="SendToEntry" asp-route-deviceId="@item.Id">Measures</a> | 
+                <a asp-controller="Device" asp-action="SendToEntry" asp-route-deviceId="@item.Id">Measures</a> |
+                <a asp-controller="Device" asp-action="SendToCode" asp-route-deviceId="@item.Id">Codes</a> | 
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

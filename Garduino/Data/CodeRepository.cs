@@ -84,14 +84,19 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Code what, Device device)
+        public async Task<bool> IsContainedAsync(Code what, Device device)
         {
             return device.Codes.Any(g => g.Equals(what));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, Device device)
+        public async Task<bool> IsContainedAsync(Guid id, Device device)
         {
             return device.Codes.Any(g => g.Id.Equals(id));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id)
+        {
+            return await _context.Code.AnyAsync(g => g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id)

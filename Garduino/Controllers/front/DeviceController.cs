@@ -158,7 +158,7 @@ namespace Garduino.Controllers.front
 
         private async Task<bool> DeviceExists(Guid id)
         {
-            return await _repository.ContainsAsync(id, await GetCurrentUserAsync());
+            return await _repository.IsContainedAsync(id, await GetCurrentUserAsync());
         }
 
         private async Task<User> GetCurrentUserAsync() => await _userRepository.GetAsync(await GetCurrentUserIdAsync());
@@ -169,10 +169,14 @@ namespace Garduino.Controllers.front
             return userId?.Id;
         }
 
-        public async Task<IActionResult> SendToEntry(Guid deviceId)
+        public IActionResult SendToEntry(Guid deviceId)
         {
-            _appState.CurrentDeviceId = deviceId;
-            return RedirectToAction("Index", "Entry");
+            return RedirectToAction("Index", "Entry", new { deviceId });
+        }
+
+        public IActionResult SendToCode(Guid deviceId)
+        {
+            return RedirectToAction("Index", "Code", new { deviceId });
         }
 
         [AcceptVerbs("Get", "Post")]

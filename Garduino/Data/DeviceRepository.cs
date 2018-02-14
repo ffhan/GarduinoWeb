@@ -57,14 +57,19 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> ContainsAsync(Device what, User user)
+        public async Task<bool> IsContainedAsync(Device what, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Equals(what));
         }
 
-        public async Task<bool> ContainsAsync(Guid id, User user)
+        public async Task<bool> IsContainedAsync(Guid id, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Id.Equals(id));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id)
+        {
+            return await _context.Device.AnyAsync(g => g.Id.Equals(id));
         }
 
         public async Task<bool> DeleteAsync(Guid id)

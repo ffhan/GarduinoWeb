@@ -7,10 +7,10 @@
 <h2>@ViewData["Title"]</h2>
 
 <p>
-    <a asp-action="Create">Create New</a> | 
-    <a asp-action="All">See all</a>
+    <a asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Create New</a> | 
+    <a asp-action="All" asp-route-deviceId="@ViewData["deviceId"]">See all</a>
 </p>
-<form asp-controller="Code" asp-action="Index" method="get">
+<form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
     @await Html.PartialAsync("Search")
 </form>
 <table class="table">

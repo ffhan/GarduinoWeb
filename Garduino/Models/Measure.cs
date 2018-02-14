@@ -74,7 +74,6 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-            Device = measure.Device;
         }
 
         
