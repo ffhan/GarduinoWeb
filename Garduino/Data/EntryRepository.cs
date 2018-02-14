@@ -22,13 +22,17 @@ namespace Garduino.Data
         {
             bool tmp = await IsContainedAsync(measure, device);
             measure.SetDevice(device);
-            if (!tmp)
+            if (tmp) return false;
+            try
             {
                 _context.Measure.Add(measure);
                 await _context.SaveChangesAsync();
-                return true;
             }
-            return false;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            return true;
         }
 
         public IEnumerable<Measure> GetAll(Device device)
@@ -55,9 +59,16 @@ namespace Garduino.Data
         {
             Measure mes = await GetAsync(id);
             if (mes is null) return false;
-            mes.Update(measure);
-            _context.Entry(mes).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                mes.Update(measure);
+                _context.Entry(mes).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -85,7 +96,7 @@ namespace Garduino.Data
                 _context.Measure.Remove(await GetAsync(id));
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
             {
                 return false;
             }
@@ -103,7 +114,7 @@ namespace Garduino.Data
             {
                 await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Query;
 namespace Garduino.Data
 {
     public class DeviceRepository : IDeviceRepository
+        //TODO: security fixes - currently it's possible to get, & update data without being it's owner.
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,12 +20,13 @@ namespace Garduino.Data
         public async Task<bool> AddAsync(Device what, User user)
         {
             what.SetUser(user);
+            if (await DeviceExistsAsync(what.Name, user)) return false;
             try
             {
                 await _context.Device.AddAsync(what);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }
@@ -53,7 +55,14 @@ namespace Garduino.Data
             if (device is null) return false;
             device.Update(what);
             _context.Entry(device).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -79,7 +88,11 @@ namespace Garduino.Data
                 _context.Device.Remove(await GetAsync(id));
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            catch (ArgumentNullException)
             {
                 return false;
             }
@@ -94,7 +107,7 @@ namespace Garduino.Data
             {
                 await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Device");
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }

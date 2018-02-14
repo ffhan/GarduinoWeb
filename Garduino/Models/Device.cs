@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GarduinoUniversal;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Garduino.Models
 {
@@ -22,10 +23,12 @@ namespace Garduino.Models
         [DisplayName("Device name")]
         public string Name { get; set; }
 
+        [JsonIgnore]
         public virtual User User { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Measure> Measures { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<Code> Codes { get; set; }
 
         public void Update(Device code)

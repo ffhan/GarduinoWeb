@@ -26,7 +26,7 @@ namespace Garduino.Data
                 await _context.User.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }

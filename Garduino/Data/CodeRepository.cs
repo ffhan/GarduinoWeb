@@ -26,7 +26,7 @@ namespace Garduino.Data
                 await _context.Code.AddAsync(code);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }
@@ -79,8 +79,15 @@ namespace Garduino.Data
             Code code = await GetAsync(id);
             if (code is null) return false;
             code.Update(what);
-            _context.Entry(code).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Entry(code).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -106,7 +113,7 @@ namespace Garduino.Data
                 _context.Code.Remove(await GetAsync(id));
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
             {
                 return false;
             }
@@ -119,7 +126,7 @@ namespace Garduino.Data
             {
                 await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Code");
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }

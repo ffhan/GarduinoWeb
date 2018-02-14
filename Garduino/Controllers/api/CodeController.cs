@@ -21,10 +21,13 @@ namespace Garduino.Controllers.api
     public class CodeController : Controller
     {
         private readonly ICodeRepository _repository;
+        private readonly IDeviceRepository _deviceRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CodeController(ICodeRepository repository, UserManager<ApplicationUser> userManager)
+        public CodeController(IDeviceRepository deviceRepository, ICodeRepository repository, 
+            UserManager<ApplicationUser> userManager)
         {
+            _deviceRepository = deviceRepository;
             _repository = repository;
             _userManager = userManager;
         }
@@ -121,11 +124,20 @@ namespace Garduino.Controllers.api
             return BadRequest();
         }
 
-
-        private async Task<string> GetCurrentUserIdAsync()
+        private async Task<Guid> GetDeviceIdAsync(Guid codeId)
         {
-            var userId = await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value));
-            return userId?.Id;
+            Code code = await _repository.GetAsync(codeId);
+            Guid deviceId = code.Device.Id;
+            return deviceId;
+        }
+
+        private async Task<Device> _GetDeviceAsync(Guid deviceId) => await _deviceRepository.GetAsync(deviceId);
+
+        private async Task<Device> GetDeviceAsync(Guid? deviceId)
+        {
+            if (deviceId == null) return null;
+            var device = await _GetDeviceAsync(deviceId.Value);
+            return device ?? null;
         }
     }*/
 }
