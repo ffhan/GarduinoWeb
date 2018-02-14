@@ -11,8 +11,8 @@ using System;
 namespace Garduino.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180210162341_AddedDevice")]
-    partial class AddedDevice
+    [Migration("20180212234012_Revision1")]
+    partial class Revision1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -89,12 +89,7 @@ namespace Garduino.Data.Migrations
 
                     b.Property<Guid?>("DeviceId");
 
-                    b.Property<string>("DeviceName")
-                        .IsRequired();
-
                     b.Property<bool>("IsCompleted");
-
-                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -111,10 +106,11 @@ namespace Garduino.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Device");
                 });
@@ -132,22 +128,27 @@ namespace Garduino.Data.Migrations
 
                     b.Property<Guid?>("DeviceId");
 
-                    b.Property<string>("DeviceName")
-                        .IsRequired();
-
                     b.Property<bool>("LightState");
 
                     b.Property<string>("SoilDescription");
 
                     b.Property<int>("SoilMoisture");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
 
                     b.ToTable("Measure");
+                });
+
+            modelBuilder.Entity("Garduino.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -263,6 +264,13 @@ namespace Garduino.Data.Migrations
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Codes")
                         .HasForeignKey("DeviceId");
+                });
+
+            modelBuilder.Entity("Garduino.Models.Device", b =>
+                {
+                    b.HasOne("Garduino.Models.User", "User")
+                        .WithMany("Devices")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Garduino.Models.Measure", b =>

@@ -7,10 +7,10 @@
 <h2>@ViewData["Title"]</h2>
 
 <p>
-    <a asp-action="Create">Create New</a> | 
-    <a asp-action="All">See all</a>
+    <a asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Create New</a> | 
+    <a asp-action="All" asp-route-deviceId="@ViewData["deviceId"]">See all</a>
 </p>
-<form asp-controller="Code" asp-action="Index" method="get">
+<form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
     @await Html.PartialAsync("Search")
 </form>
 <table class="table">
@@ -26,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.DateArrived)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DeviceName)
+                @Html.DisplayNameFor(model => model.Device.Name)
             </th>
             <th></th>
         </tr>
@@ -44,7 +44,7 @@
                 @Html.DisplayFor(modelItem => item.DateArrived)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DeviceName)
+                @Html.DisplayFor(modelItem => item.Device.Name)
             </td>
             <td>
                 @Html.Partial("TableLinks", item)

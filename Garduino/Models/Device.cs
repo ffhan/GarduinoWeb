@@ -6,10 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using GarduinoUniversal;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Garduino.Models
 {
-    public class Device : IBaseModel<Device>
+    public class Device : IDeviceModel
     {
 
         [Key]
@@ -22,27 +23,22 @@ namespace Garduino.Models
         [DisplayName("Device name")]
         public string Name { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
+        [JsonIgnore]
+        public virtual User User { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Measure> Measures { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<Code> Codes { get; set; }
 
-        public void SetUser(string id) => UserId = id;
         public void Update(Device code)
         {
             Name = code.Name;
         }
 
-        public bool EqualsEf(Device other)
-        {
-            return Equals(other);
-        }
+        public void SetUser(User user) => User = user;
 
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
-
-        public int CompareTo(Device other) => String.Compare(Name, other.Name, StringComparison.Ordinal);
+        public bool IsUser(User user) => StringOperations.IsFromUser(User?.Id, user.Id);
 
     }
 }

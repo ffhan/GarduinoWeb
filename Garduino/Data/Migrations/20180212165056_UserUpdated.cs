@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 namespace Garduino.Data.Migrations
 {
-    public partial class AddedDevice : Migration
+    public partial class UserUpdated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.AddColumn<Guid>(
                 name: "DeviceId",
                 table: "Measure",
@@ -23,12 +24,18 @@ namespace Garduino.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    UserId = table.Column<string>(nullable: false)
+                    ApplicationUserId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Device", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Device_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -40,6 +47,11 @@ namespace Garduino.Data.Migrations
                 name: "IX_Code_DeviceId",
                 table: "Code",
                 column: "DeviceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Device_ApplicationUserId",
+                table: "Device",
+                column: "ApplicationUserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Code_Device_DeviceId",
@@ -86,6 +98,16 @@ namespace Garduino.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "DeviceId",
                 table: "Code");
+
+            migrationBuilder.AddColumn<string>(
+                name: "UserId",
+                table: "Measure",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "UserId",
+                table: "Code",
+                nullable: true);
         }
     }
 }

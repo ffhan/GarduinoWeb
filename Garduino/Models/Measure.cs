@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using GarduinoUniversal;
+using Newtonsoft.Json;
 
 namespace Garduino.Models
 {// TODO: Add device name
@@ -22,7 +23,7 @@ namespace Garduino.Models
         public int SoilMoisture { get; set; }
 
         [DisplayName("Soil description")]
-        public String SoilDescription { get; set; }
+        public string SoilDescription { get; set; }
 
         [Required]
         [DisplayName("Air humidity")]
@@ -34,16 +35,9 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
-        [HiddenInput]
-        public string UserId { get; set; }
-
-        [Required]
-        [MinLength(4)]
-        public string DeviceName { get; set; }
-
+        [JsonIgnore]
         public virtual Device Device { get; set; }
 
-        public void SetUser(string id) => UserId = id;
 
         public bool EqualsEf(Measure measure)
         {
@@ -59,15 +53,14 @@ namespace Garduino.Models
         {
            return Equals(obj as Measure);
         }
-
-        public bool IsUser(string userId) => StringOperations.IsFromUser(UserId, userId);
+        
 
         public bool Equals(Measure other)
         {
            try
            {
                return other != null &&
-                      DateTime.Equals(other.DateTime) && IsFromDevice(other.DeviceName);
+                      DateTime.Equals(other.DateTime) && IsFromDevice(other.Device.Name);
            }
            catch (Exception e)
            {
@@ -83,7 +76,6 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-            DeviceName = measure.DeviceName;
         }
 
         
@@ -106,15 +98,25 @@ namespace Garduino.Models
             return !(measure1 == measure2);
         }
 
-        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(DeviceName, device);
+        public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);
 
         public override int GetHashCode()
         {
             var hashCode = -1004238049;
             hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UserId);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Device>.Default.GetHashCode(Device);
+            hashCode = hashCode * -1521134295 + EqualityComparer<int>.Default.GetHashCode(SoilMoisture);
             return hashCode;
+        }
+
+        public void SetDevice(Device device)
+        {
+            Device = device;
+        }
+
+        public bool IsFromDevice(Device device)
+        {
+            return StringOperations.IsFromDevice(Device.Name, device.Name);
         }
     }
 }

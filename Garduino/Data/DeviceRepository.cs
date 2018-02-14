@@ -2,62 +2,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using GarduinoUniversal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Garduino.Data
 {
     public class DeviceRepository : IDeviceRepository
+        //TODO: security fixes - currently it's possible to get, & update data without being it's owner.
     {
         private readonly ApplicationDbContext _context;
 
         public DeviceRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<bool> AddAsync(Device what, string userId)
+        public async Task<bool> AddAsync(Device what, User user)
         {
-            what.SetUser(userId);
-
+            what.SetUser(user);
+            if (await DeviceExistsAsync(what.Name, user)) return false;
             try
             {
                 await _context.Device.AddAsync(what);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }
             return true;
         }
 
-        public IEnumerable<Device> GetAll(string userId)
+        public IEnumerable<Device> GetAll(User user)
         {
-            return _context.Device.Where(g => g.IsUser(userId));
+            return _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).Where(g => g.IsUser(user));
         }
 
-        public IEnumerable<Device> GetDevice(string device, string userId)
+        public async Task<Device> GetAsync(string name, User user) =>
+            user.Devices.FirstOrDefault(g => StringOperations.IsFromDevice(g.Name, name));
+
+        public async Task<bool> DeviceExistsAsync(string device, User user)
         {
-            return _context.Device.Where(g => g.Name.Equals(device) && g.IsUser(userId));
+            return await _context.Device.AnyAsync(g => g.IsUser(user) && StringOperations.IsFromDevice(g.Name, device));
         }
 
-        public async Task<bool> DeviceExists(string device, string userId)
-        {
-            return await _context.Device.AnyAsync(g => g.IsUser(userId) && StringOperations.IsFromDevice(g.Name, device));
-        }
+        public async Task<Device> GetAsync(Guid id) => 
+            await _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).FirstOrDefaultAsync(g => g.Id.Equals(id));
 
-        public async Task<Device> GetAsync(Guid id, string userId)
+        public async Task<bool> UpdateAsync(Guid id, Device what)
         {
-            return await _context.Device.FirstOrDefaultAsync(g => g.Id.Equals(id) && g.IsUser(userId));
-        }
-
-        public async Task<Device> GetAsync(Device what, string userId)
-        {
-            return await _context.Device.FirstOrDefaultAsync(g => g.Equals(what) && g.IsUser(userId));
-        }
-
-        public async Task<bool> UpdateAsync(Guid id, Device what, string userId)
-        {
-            Device device = await GetAsync(id, userId);
+            var device = await GetAsync(id);
             if (device is null) return false;
             device.Update(what);
             _context.Entry(device).State = EntityState.Modified;
@@ -65,51 +59,47 @@ namespace Garduino.Data
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await ContainsAsync(device, userId))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return true;
-        }
-
-        public async Task<bool> ContainsAsync(Device what, string userId)
-        {
-            return await _context.Device.AnyAsync(g => g.IsUser(userId) && Equals(what));
-        }
-
-        public async Task<bool> ContainsAsync(Guid id, string userId)
-        {
-            return await _context.Device.AnyAsync(g => g.IsUser(userId) && g.Id.Equals(id));
-        }
-
-        public async Task<bool> DeleteAsync(Guid id, string userId)
-        {
-            try
-            {
-                _context.Device.Remove(await GetAsync(id, userId));
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
             {
                 return false;
             }
             return true;
         }
 
-        public async Task<Guid> GetId(Device what, string userId)
+        public async Task<bool> IsContainedAsync(Device what, User user)
         {
-            Device device = await _context.Device.FirstOrDefaultAsync(g => g.IsUser(userId) && Equals(what));
-            return device.Id;
+            return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Equals(what));
         }
 
-        public bool AreEqual(Device m1, Device m2) => m1.EqualsEf(m2);
+        public async Task<bool> IsContainedAsync(Guid id, User user)
+        {
+            return await _context.Device.AnyAsync(g => g.IsUser(user) && g.Id.Equals(id));
+        }
+
+        public async Task<bool> ContainsAsync(Guid id)
+        {
+            return await _context.Device.AnyAsync(g => g.Id.Equals(id));
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            try
+            {
+                _context.Device.Remove(await GetAsync(id));
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            catch (ArgumentNullException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool AreEqual(Device m1, Device m2) => m1.Equals(m2);
 
         public async Task<bool> DeleteAllAsync()
         {
@@ -117,7 +107,7 @@ namespace Garduino.Data
             {
                 await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Device");
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
                 return false;
             }
@@ -125,11 +115,11 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task AddAllAsync(ISet<Device> all, string userId)
+        public async Task AddAllAsync(ISet<Device> all, User user)
         {
             foreach (Device device in all)
             {
-                await AddAsync(device, userId);
+                await AddAsync(device, user);
             }
         }
     }

@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Create</h2>
+<h2>@ViewData["Title"]</h2>
 
 <h4>Measure</h4>
 <hr />
@@ -46,19 +46,14 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="DeviceName" class="control-label"></label>
-                <input asp-for="DeviceName" class="form-control" />
-                <span asp-validation-for="DeviceName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-default" asp-route-deviceId="@ViewData["deviceId"]"/>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
 </div>
 
 @section Scripts {

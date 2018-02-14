@@ -31,7 +31,6 @@
             <div class="form-group">
                 <input asp-for="Id" type="hidden" class="form-control" />
                 <input asp-for="DateCompleted" type="hidden" class="form-control" />
-                <input asp-for="DeviceName" type="hidden" class="form-control" />
             </div>
             <div class="form-group">
                 <div class="checkbox">
@@ -48,7 +47,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
 </div>
 
 @section Scripts {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garduino.Data
+namespace Garduino.Data.Interfaces
 {
-    public interface ITimeable<T>
+    public interface ICallable<T>
     {
-        T GetLatest(string userId);
+        T Call(string device);
     }
 }

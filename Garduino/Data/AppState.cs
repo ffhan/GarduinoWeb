@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Models;
 
 namespace Garduino.Data
 {
-    public interface IDeviceable<T>
+    public class AppState
     {
-        IEnumerable<T> GetDevice(string device, string userId);
+        public Guid CurrentDeviceId { get; set; }
     }
 }
