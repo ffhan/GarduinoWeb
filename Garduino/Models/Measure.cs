@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using GarduinoUniversal;
+using Newtonsoft.Json;
 
 namespace Garduino.Models
 {// TODO: Add device name
@@ -34,6 +35,7 @@ namespace Garduino.Models
         [DisplayName("Light on")]
         public bool LightState { get; set; }
 
+        [JsonIgnore]
         public virtual Device Device { get; set; }
 
 

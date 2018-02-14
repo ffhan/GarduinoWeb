@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
-{/*
+{
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [Route("api/Code")]
@@ -33,36 +33,48 @@ namespace Garduino.Controllers.api
         }
 
         // GET: api/Code
-        [HttpGet("all")]
-        public async Task<IEnumerable<Code>> GetCode()
+        [HttpGet("all/{deviceId}")]
+        public async Task<IEnumerable<Code>> GetAll([FromRoute] Guid deviceId)
         {
-            var t = _repository.GetAll(await ());
+            Device dev = await GetDeviceAsync(deviceId);
+            if (dev == null) return null;
+            var t = _repository.GetAll(dev);
             return t;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<Code>> GetActiveCode()
+        [HttpGet("active/{deviceId}")]
+        public async Task<IEnumerable<Code>> GetActiveCode([FromRoute] Guid deviceId)
         {
-            return _repository.GetActive(await GetCurrentUserIdAsync());
+            Device dev = await GetDeviceAsync(deviceId);
+            if (dev == null) return null;
+            return _repository.GetActive(dev);
         }
 
-        [HttpGet("complete")]
-        public async Task<Code> GetLatestCode()
+        [HttpGet("latest/{deviceId}")]
+        public async Task<Code> GetLatestCode([FromRoute] Guid deviceId)
         {
-            return _repository.GetLatest(await GetCurrentUserIdAsync());
+            Device dev = await GetDeviceAsync(deviceId);
+            if (dev == null) return null;
+            return _repository.GetLatest(dev);
         }
 
-        [HttpGet("complete={dateTime}")]
-        public async Task<IActionResult> CompleteCode([FromRoute] DateTime dateTime) //TODO: Complete & Fix.
+        public class TimeDevice
+        {
+            public DateTime dateTime { get; set; }
+            public Guid deviceId { get; set; }
+        }
+
+        [HttpPut("latest")]
+        public async Task<IActionResult> CompleteCode([FromBody] TimeDevice timeDevice) //TODO: Complete & Fix.
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            Code latest = _repository.GetLatest(await GetCurrentUserIdAsync());
-            await _repository.Complete(latest, dateTime, await GetCurrentUserIdAsync());
+            Code latest = await GetLatestCode(timeDevice.deviceId);
+            await _repository.CompleteAsync(latest, timeDevice.dateTime);
             return Ok();
         }
 
         // GET: api/Code/5
-        [HttpGet("id={id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetCode([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
@@ -70,7 +82,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            Code code = await _repository.GetAsync(id, await GetCurrentUserIdAsync());
+            Code code = await _repository.GetAsync(id);
 
             if (code == null)
             {
@@ -86,21 +98,27 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (!await _repository.UpdateAsync(id, code, await GetCurrentUserIdAsync())) return NoContent();
+            if (!await _repository.UpdateAsync(id, code)) return NoContent();
             return Ok();
+        }
+
+        public class CodeDevice
+        {
+            public Code code { get; set; }
+            public Guid deviceId { get; set; }
         }
 
         // POST: api/Code
         [HttpPost]
-        public async Task<IActionResult> PostCode([FromBody] Code code)
+        public async Task<IActionResult> PostCode([FromBody] CodeDevice codeDevice)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            //if (await _repository.AddAsync(code, await GetCurrentUserAsync())) return Ok();
-            return BadRequest();
+            if (!await _repository.AddAsync(codeDevice.code, await GetDeviceAsync(codeDevice.deviceId))) return BadRequest();
+            return Ok();
         }
 
         // DELETE: api/Code/5
@@ -112,8 +130,7 @@ namespace Garduino.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            if (await _repository.DeleteAsync(id, await GetCurrentUserIdAsync())) return Ok(await _repository.GetAsync(id,
-                await GetCurrentUserIdAsync()));
+            if (await _repository.DeleteAsync(id)) return Ok();
             return BadRequest();
         }
 
@@ -139,5 +156,5 @@ namespace Garduino.Controllers.api
             var device = await _GetDeviceAsync(deviceId.Value);
             return device ?? null;
         }
-    }*/
+    }
 }

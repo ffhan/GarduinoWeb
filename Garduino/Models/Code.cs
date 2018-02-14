@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Garduino.Models.ViewModels;
 using GarduinoUniversal;
+using Newtonsoft.Json;
 
 namespace Garduino.Models
 {
@@ -36,6 +37,7 @@ namespace Garduino.Models
         [DisplayName("Is it completed?")]
         public bool IsCompleted { get; set; }
 
+        [JsonIgnore]
         public virtual Device Device { get; set; }
 
         public Code(CodeViewModel codeViewModel)

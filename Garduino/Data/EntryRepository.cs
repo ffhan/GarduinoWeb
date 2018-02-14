@@ -93,7 +93,9 @@ namespace Garduino.Data
         {
             try
             {
-                _context.Measure.Remove(await GetAsync(id));
+                Measure mes = await GetAsync(id);
+                if (mes == null) return false;
+                _context.Measure.Remove(mes);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)

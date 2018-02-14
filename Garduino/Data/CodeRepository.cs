@@ -40,10 +40,11 @@ namespace Garduino.Data
 
         public Code GetLatest(Device device)
         {
-            return device.Codes?.OrderByDescending(g => g).Reverse().FirstOrDefault();
+            return GetActive(device).FirstOrDefault();
         }
 
-        public IEnumerable<Code> GetActive(Device device) => device.Codes?.Where(g => !g.IsCompleted);
+        public IEnumerable<Code> GetActive(Device device) => device.Codes?.Where(g => !g.IsCompleted)
+            .OrderByDescending(g => g.DateArrived);
 
         public async Task CompleteAsync(Code code, DateTime dateExecuted)
         {
