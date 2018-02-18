@@ -12,6 +12,10 @@
     <Compile Remove="Data\Migrations\20180209130807_HideUserId.Designer.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Properties\PublishProfiles\Garduino20180215032159 - Web Deploy.pubxml" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="4.0.0" />
@@ -47,6 +51,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GarduinoUniversal\GarduinoUniversal.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>

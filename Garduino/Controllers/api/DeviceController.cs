@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -111,6 +112,23 @@ namespace Garduino.Controllers.api
             if (await _repository.DeleteAsync(id)) return Ok();
             return InternalServerError();
         }
+
+
+        public class State
+        {
+            public int state { get; set; }
+        }
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> PutState([FromRoute] Guid id, [FromBody] State state)
+        {
+            Device dev = await _repository.GetAsync(id);
+            if (dev == null) return NotFound();
+            if (state == null) return BadRequest();
+            dev.State = state.state;
+            await _repository.UpdateAsync(id, dev);
+            return Ok();
+        }
+
 
         private async Task<string> _GetCurrentUserIdAsync() =>
             (await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value)))?.Id;

@@ -69,6 +69,7 @@ namespace Garduino.Controllers.api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             Code latest = await GetLatestCode(timeDevice.deviceId);
+            if (latest == null) return NotFound();
             await _repository.CompleteAsync(latest, timeDevice.dateTime);
             return Ok();
         }

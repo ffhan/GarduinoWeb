@@ -31,14 +31,53 @@ namespace Garduino.Models
         [JsonIgnore]
         public virtual ICollection<Code> Codes { get; set; }
 
+        public int State { get; set; }
+
+        [DisplayName("Global lock")]
+        public bool GlobalLock => IsBitSet(0);
+        [DisplayName("Logging")]
+        public bool Logging => IsBitSet(1);
+        [DisplayName("Written")]
+        public bool Written => IsBitSet(2);
+        [DisplayName("SD card initialised")]
+        public bool IsInitialised=> IsBitSet(3);
+        [DisplayName("Lights on")]
+        public bool LightState => IsBitSet(4);
+        [DisplayName("Manual light control")]
+        public bool LightAdmin => IsBitSet(5);
+        [DisplayName("Heating on")]
+        public bool HeatState => IsBitSet(6);
+        [DisplayName("Manual heating control")]
+        public bool HeatAdmin => IsBitSet(7);
+        [DisplayName("Watering on")]
+        public bool WaterState => IsBitSet(8);
+        [DisplayName("Manual watering control")]
+        public bool WaterAdmin => IsBitSet(9);
+        [DisplayName("Code fetched?")]
+        public bool CodeFetch => IsBitSet(14);
+        [DisplayName("Connectivity reconfigured?")]
+        public bool NetReconf => IsBitSet(15);
+
+        [DisplayName("Entry count")]
+        public int EntryCount => Measures.Count;
+
+        [DisplayName("Code count")]
+        public int CodeCount => Codes.Count;
+
         public void Update(Device code)
         {
             Name = code.Name;
+            if (code.State != 0) State = code.State;
         }
 
         public void SetUser(User user) => User = user;
 
         public bool IsUser(User user) => StringOperations.IsFromUser(User?.Id, user.Id);
+
+        private bool IsBitSet(int pos)
+        {
+            return (State & (1 << pos)) != 0;
+        }
 
     }
 }

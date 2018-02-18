@@ -44,7 +44,7 @@ namespace Garduino.Data
         }
 
         public IEnumerable<Code> GetActive(Device device) => device.Codes?.Where(g => !g.IsCompleted)
-            .OrderByDescending(g => g.DateArrived);
+            .OrderByDescending(g => g.DateArrived).Reverse();
 
         public async Task CompleteAsync(Code code, DateTime dateExecuted)
         {
@@ -55,12 +55,13 @@ namespace Garduino.Data
         public async Task CompleteAsync(Guid id, DateTime dateExecuted)
         {
             Code code = await GetAsync(id);
+            if (code == null) return;
             await CompleteAsync(code, dateExecuted);
         }
 
         public async Task<Code> GetAsync(Guid id)
         {
-            return _context.Code.Include(c => c.Device).FirstOrDefault(g => g.Id.Equals(id));
+            return await _context.Code.Include(c => c.Device).FirstOrDefaultAsync(g => g.Id.Equals(id));
         }
 
         public async Task<Code> GetAsync(Code what)
