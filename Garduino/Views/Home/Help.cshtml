@@ -6,10 +6,234 @@
 
 <div class="jumbotron">
     <div class="page-header">
-        <h1>How to use Garduino</h1>
+        <h1>How to use Garduino <small>- quick overview</small></h1>
+    </div>
+    <h2>Let's talk code.</h2>
+    <hr />
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <div class="panel-title">Basics</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                <strong>API</strong> (<strong>A</strong>pplication <strong>P</strong>rogramming <strong>I</strong>nterface) is a set of functions and procedures that allow the
+                creation of applications which access the features or data of an operating system, application, or other service.<br />
+            </p>
+            <p>
+                <strong class="text-success">Garduino</strong> system allows for two types of communication between you and your <span class="text-primary">device</span>:<br />
+                <strong class="text-warning">Entry</strong> is a collection of measurements stored in the database, allowing you to have an overview of how your plants are doing,
+                in what conditions they're currently and see long-term data trends.<br />
+                <strong class="text-info">Code</strong> is a number corresponding to a certain action in a Garduino system.<br />
+                Every Device can have many entries & codes.
+            </p>
+        </div>
     </div>
 
-        
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Device</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                <strong class="text-primary">Device</strong> (in this context) is a collection of entries and codes that you can communicate directly with.<br />
+                When you create a device you can give it a name and then add entries or codes. <br />
+            </p>
+            <p>
+                Each Device has many properties, which you can see if you press <span class="label label-warning">Details</span> on <code>My Devices</code> tab.<br />
+                Left-hand side of the device name in <code>My Devices</code> tab is an icon that represents if your device is communicating regularly with this API.
+            </p>
 
+        </div>
+    </div>
+
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <div class="panel-title">Entry</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                Each <strong class="text-warning">Entry</strong> contains:<br />
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Soil moisture:</strong> volumetric content of water in soil</li>
+                    <li class="list-group-item"><strong>Air humidity:</strong> humidity percentage in air</li>
+                    <li class="list-group-item"><strong>Air temperature:</strong> ambient temperature</li>
+                    <li class="list-group-item">Date & Time of measurement</li>
+                    <li class="list-group-item">Lighting on/off</li>
+                </ul>
+            </p>
+            <p>
+                It is recommended not to add entries manually, device itself should do that automatically.
+            </p>
+
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">Code</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                Each <strong class="text-info">Code</strong> contains:<br />
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Action:</strong> instruction integer for the device, more about that later</li>
+                    <li class="list-group-item"><strong>Action name:</strong> description designed to ease understanding of what each action does</li>
+                    <li class="list-group-item"><strong>Date arrived:</strong> Date & time of code creation, before it went to the device</li>
+                    <li class="list-group-item"><strong>Date executed:</strong> Date & time of code execution in a device</li>
+                    <li class="list-group-item"><strong>Date completed:</strong> Date & time of affirmation that the code was executed successfully</li>
+                    <li class="list-group-item"><strong>Completed:</strong> defines if that code is completed</li>
+                </ul>
+            </p>
+            <h3>Difference between an Action and a Code</h3>
+            <hr />
+            <p>
+                <strong class="text-info">Code</strong> holds data about a users request to do a specific action.<br />
+                <strong>Action</strong> is an integer that corresponds to a certain functionality inside a Garduino device.
+            </p>
+
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">Code</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                Each <strong class="text-info">Code</strong> contains:<br />
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Action:</strong> instruction integer for the device, more about that later</li>
+                    <li class="list-group-item"><strong>Action name:</strong> description designed to ease understanding of what each action does</li>
+                    <li class="list-group-item"><strong>Date arrived:</strong> Date & time of code creation, before it went to the device</li>
+                    <li class="list-group-item"><strong>Date executed:</strong> Date & time of code execution in a device</li>
+                    <li class="list-group-item"><strong>Date completed:</strong> Date & time of affirmation that the code was executed successfully</li>
+                    <li class="list-group-item"><strong>Completed:</strong> defines if that code is completed</li>
+                </ul>
+            </p>
+            <h3>Difference between an Action and a Code</h3>
+            <hr />
+            <p>
+                <strong class="text-info">Code</strong> holds data about a users request to do a specific action.<br />
+                <strong>Action</strong> is an integer that corresponds to a certain functionality inside a Garduino device.
+            </p>
+
+        </div>
+    </div>
+    <h2>Still here? Let's discuss the Garduino system.</h2>
+    <hr />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">What is a Garduino device?</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                <strong class="text-success">Garduino device</strong> refers to any kind of device that follows basic Garduino principles (Device, Code, Entry),
+                their respective properties and that is able to communicate with this web API.
+            </p>
+            <p>
+                That said, Arduino&reg; microcontrollers are currently the only ones that have real code behind themselves.<br />
+                The easiest way to get a Garduino system is to follow and use information & code provided from <a href="http://github.com/ffhan/garduino">here</a>.
+            </p>
+            <p>
+                Some basic components that you need for a stripped down Garduino system are:
+                <ul class="list-group">
+                    <li class="list-group-item">Arduino (Uno/Mega)</li>
+                    <li class="list-group-item">Ethernet shield</li>
+                    <li class="list-group-item">Capacitative soil moisture sensor</li>
+                    <li class="list-group-item">Air & humidity sensor</li>
+                    <li class="list-group-item">Real Time Clock</li>
+                </ul>
+                
+            </p>
+        </div>
+        <div class="panel-footer">
+            Be aware that the component list depends greatly on <b>your</b> needs & specifications.<br />
+            For further information please refer to the link above.
+        </div>
+    </div>
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <div class="panel-title">All current supported Actions</div>
+        </div>
+        <div class="panel-body">
+            <p>
+                Garduino web API is designed to be able to send <b>any</b> code to <b>any</b> device, though it is advisable to keep it simple and 
+                follow at least these Actions:
+            </p>
+            <div class="table-bordered">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Action name</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>Global lock</td>
+                        <td>Enables custom modifications to the device operations. If Global lock is ON everything in the system happens automatically, as designed</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Light state</td>
+                        <td>Turns lights ON or OFF - if Light admin is ON</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Logging</td>
+                        <td>Turns logging to SD card ON or OFF if Global lock is OFF</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Heating state</td>
+                        <td>Turns heating ON or OFF - if Heat admin is ON</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Light admin</td>
+                        <td>Turns off system control of lighting - user controls if lights are ON or OFF</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Measure values</td>
+                        <td>Measures values from all sensors and sends it to web API and SD card if Logging is ON</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Heating admin</td>
+                        <td>Turns off system control of heating - user controls if heating is ON or OFF</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Watering state</td>
+                        <td>Turns watering ON or OFF - if Watering admin is ON</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Print time</td>
+                        <td>Prints device time to the console</td>
+                    </tr>
+                    <tr>
+                        <td>200</td>
+                        <td>Update device ID</td>
+                        <td>Device sends its' name to web API which sends device ID back</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                The main principle for extending and customizing Garduino system is that there has to be a clear distinction between what's
+                user controlled and what is device controlled.<br/>
+                This ensures that device runs exactly as intended and enables long-distance control, since you don't have to be near the device
+                to know that it functions properly.<br/>
+            </p>
+            <p>
+                For example, turning the lights to always be ON require <code>Global lock OFF</code>&rarr;<code>Light admin ON</code>&rarr;<code>Lights ON</code><br/>
+                If there is something wrong with how the device runs you can easily look at its' internal state in <span class="text-primary">Device</span> details.
+            </p>
+        </div>
+    </div>
 </div>
 

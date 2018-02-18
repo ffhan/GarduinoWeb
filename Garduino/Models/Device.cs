@@ -64,11 +64,24 @@ namespace Garduino.Models
         [DisplayName("Code count")]
         public int CodeCount => Codes.Count;
 
+        [DisplayName("Last time seen")]
+        public DateTime LastSign { get; set; }
+
         public void Update(Device code)
         {
             Name = code.Name;
-            if (code.State != 0) State = code.State;
+            if (code.State != 0)
+            {
+                State = code.State;
+                LastSign = DateTime.UtcNow;
+            }
         }
+
+        [DisplayName("Time since last call")]
+        public TimeSpan TimeSinceSign => (DateTime.UtcNow - LastSign);
+
+        [DisplayName("Is alive?")]
+        public bool Alive => TimeSinceSign.TotalMinutes <= 30;
 
         public void SetUser(User user) => User = user;
 

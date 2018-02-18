@@ -23,59 +23,61 @@
         </div>
     </div>
 
-    <br />
-    <table class="table">
-        <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Action)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ActionName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateArrived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateExecuted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCompleted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsCompleted)
-            </th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model) {
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Action)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ActionName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateArrived)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateExecuted)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateCompleted)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsCompleted)
-                </td>
-                <td>
-                    @Html.Partial("TableLinks", item)
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Action)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ActionName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateArrived)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateExecuted)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateCompleted)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsCompleted)
+                </th>
+                <th></th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Action)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ActionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateArrived)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateExecuted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateCompleted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsCompleted)
+                    </td>
+                    <td>
+                        @Html.Partial("TableLinks", item)
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    
 
 
 </div>

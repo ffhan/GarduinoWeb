@@ -24,9 +24,9 @@
         </div>
     </div>
 
-    <br />
-    <table class="table">
-        <thead>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Action)
@@ -39,8 +39,8 @@
                 </th>
                 <th></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             @foreach (var item in Model)
             {
                 <tr>
@@ -58,8 +58,10 @@
                     </td>
                 </tr>
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+    
 
 </div>
 

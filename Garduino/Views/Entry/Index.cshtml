@@ -13,64 +13,65 @@
         </h2>
     </div>
     <br />
-
-    <table class="table table-responsive">
-        <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DateTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoilMoisture)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoilDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AirHumidity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AirTemperature)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LightState)
-            </th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @if (Model != null)
-        {
-            foreach (var item in Model)
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SoilMoisture)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SoilDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AirHumidity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AirTemperature)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LightState)
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (Model != null)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DateTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SoilMoisture)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SoilDescription)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AirHumidity)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AirTemperature)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LightState)
-                    </td>
-                    <td>
-                        @Html.Partial("TableLinks", item)
-                    </td>
-                </tr>
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SoilMoisture)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SoilDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AirHumidity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AirTemperature)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LightState)
+                        </td>
+                        <td>
+                            @Html.Partial("TableLinks", item)
+                        </td>
+                    </tr>
+                }
             }
-        }
-        </tbody>
-    </table>
-
+            </tbody>
+        </table>
+    </div>
     
 </div>
 
