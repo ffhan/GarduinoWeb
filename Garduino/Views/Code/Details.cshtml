@@ -1,14 +1,18 @@
 ﻿@model Garduino.Models.Code
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Code details";
 }
 
-<h2>Details</h2>
 
-<div>
-    <h4>Code</h4>
-    <hr />
+
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            @ViewData["Title"]
+            <a asp-action="Edit" class="btn btn-warning pull-right" asp-route-id="@Model.Id?">Edit</a>
+        </h2>
+    </div>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => Model.Action)
@@ -41,8 +45,6 @@
             @Html.DisplayFor(model => Model.IsCompleted)
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id?">Edit</a> |
     <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
 </div>
+

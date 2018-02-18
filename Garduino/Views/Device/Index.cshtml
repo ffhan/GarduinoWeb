@@ -5,34 +5,28 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            My Devices <small>&nbsp;All your devices, in one place!<a class="btn btn-primary pull-right" asp-controller="Device" asp-action="Create">Create a device</a></small>
+        </h2>
+    </div>
+    <br />
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-controller="Device" asp-action="SendToEntry" asp-route-deviceId="@item.Id">Measures</a> |
-                <a asp-controller="Device" asp-action="SendToCode" asp-route-deviceId="@item.Id">Codes</a> | 
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <li class="list-group-item">
+            <div class="pull-right">
+                <a asp-action="SendToEntry" asp-route-deviceId="@item.Id"><span class="badge">Entries @item.EntryCount</span></a>
+                <a asp-action="SendToCode" asp-route-deviceId="@item.Id"><span class="badge">Codes @item.CodeCount</span></a>
+                <a asp-action="Edit" asp-route-id="@item.Id"><span style="margin-left: 15px;"class="label label-info">Edit</span></a>
+                <a asp-action="Details" asp-route-id="@item.Id"><span class="label label-warning">Details</span></a>
+                <a asp-action="Delete" asp-route-id="@item.Id"><span class="label label-danger">Delete</span></a>
+            </div>
+            @Html.DisplayFor(model => item.Name)
+        </li>
+        
+    }
+    </ul>
+</div>

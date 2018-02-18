@@ -7,7 +7,7 @@
     <title>@ViewData["Title"] - Garduino</title>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap_custom.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
@@ -36,10 +36,12 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                @if(!string.IsNullOrWhiteSpace(User.Identity.Name))
-                {
-                    <li><a asp-area="" asp-controller="Device" asp-action="Index">Home</a></li>
-                }
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Help">Help</a></li>
+                    @if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+    {
+                <li><a asp-area="" asp-controller="Device" asp-action="Index">My Devices</a></li>
+}
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>

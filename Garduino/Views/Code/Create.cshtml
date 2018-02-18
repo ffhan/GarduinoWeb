@@ -1,38 +1,43 @@
 ﻿@model Garduino.Models.Code
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create a code";
 }
 
-<h2>Create</h2>
 
-<h4>Code</h4>
+
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Action" class="control-label"></label>
-                <input asp-for="Action" class="form-control" />
-                <span asp-validation-for="Action" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ActionName" class="control-label"></label>
-                <input asp-for="ActionName" class="form-control" />
-                <span asp-validation-for="ActionName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>@ViewData["Title"]</h2>
     </div>
-</div>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Action" class="control-label"></label>
+                    <input asp-for="Action" class="form-control"/>
+                    <span asp-validation-for="Action" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ActionName" class="control-label"></label>
+                    <input asp-for="ActionName" class="form-control"/>
+                    <span asp-validation-for="ActionName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-success"/>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<div>
-    <a asp-action="Index"asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
-</div>
+    <div>
+        <a asp-action="Index"asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+
+</div>

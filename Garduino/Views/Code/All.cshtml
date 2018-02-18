@@ -4,64 +4,78 @@
     ViewData["Title"] = "All codes";
 }
 
-<h2>Index</h2>
 
-<p>
-    <a asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Create New</a>
-    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">See yet-to-do</a>
-</p>
-<form asp-controller="Code" asp-action="All" asp-route-deviceId="@ViewData["deviceId"]" method="get">
-    @await Html.PartialAsync("Search")
-</form>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Action)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActionName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DateArrived)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DateExecuted)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DateCompleted)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsCompleted)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            @ViewData["Title"] <small>&nbsp;All your codes, in one place!<a class="btn btn-primary pull-right" asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Add a code</a></small>
+        </h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-1">
+            <a asp-action="Index" class="btn btn-default" asp-route-deviceId="@ViewData["deviceId"]">See active</a>
+        </div>
+        <div class="col-md-11">
+            <form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
+                @await Html.PartialAsync("Search")
+            </form>
+        </div>
+    </div>
+
+    <br />
+    <table class="table">
+        <thead>
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Action)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActionName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateArrived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateExecuted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCompleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsCompleted)
-            </td>
-            <td>
-                @Html.Partial("TableLinks", item)
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.Action)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateArrived)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateExecuted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateCompleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsCompleted)
+            </th>
+            <th></th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Action)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateArrived)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateExecuted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateCompleted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsCompleted)
+                </td>
+                <td>
+                    @Html.Partial("TableLinks", item)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+
+</div>

@@ -1,15 +1,17 @@
 ﻿@model Garduino.Models.Measure
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Entry details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>Measure</h4>
-    <hr />
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            @ViewData["Title"]
+            <a class="btn btn-warning pull-right" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        </h2>
+    </div>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.DateTime)
@@ -47,9 +49,15 @@
         <dd>
             @Html.DisplayFor(model => model.LightState)
         </dd>
+        <dt>
+
+        </dt>
+        <dd>
+
+        </dd>
     </dl>
+
+    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
 </div>

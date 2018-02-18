@@ -1,72 +1,76 @@
 ﻿@model IEnumerable<Garduino.Models.Measure>
 
 @{
-    ViewData["Title"] = "All measures";
+    ViewData["Title"] = "Device Entries";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewData["Title"]</h2>
 
-<p>
-    <a asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Create New</a>
-</p>
-<form asp-controller="Entry" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
-    @await Html.PartialAsync("Search")
-</form>
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            @ViewData["Title"] <small>&nbsp;All your entries, in one place!<a class="btn btn-primary pull-right" asp-controller="Entry" asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Post entry</a></small>
+        </h2>
+    </div>
+    <br />
 
-<table class="table">
-    <thead>
+    <table class="table table-responsive">
+        <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.DateTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SoilMoisture)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SoilDescription)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AirHumidity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AirTemperature)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LightState)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoilMoisture)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoilDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AirHumidity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AirTemperature)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LightState)
+            </th>
             <th></th>
         </tr>
-    </thead>
-    <tbody>
-    @if (Model != null)
-    {
-        foreach (var item in Model)
-         {
-             <tr>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.DateTime)
-                 </td>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.SoilMoisture)
-                 </td>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.SoilDescription)
-                 </td>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.AirHumidity)
-                 </td>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.AirTemperature)
-                 </td>
-                 <td>
-                     @Html.DisplayFor(modelItem => item.LightState)
-                 </td>
-                 <td>
-                     @Html.Partial("TableLinks", item)
-                 </td>
-             </tr>
-         }
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SoilMoisture)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SoilDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AirHumidity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AirTemperature)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LightState)
+                    </td>
+                    <td>
+                        @Html.Partial("TableLinks", item)
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+
+    
+</div>
+

@@ -4,52 +4,62 @@
     ViewData["Title"] = "Active codes";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>
+            @ViewData["Title"] <small>&nbsp;Your active codes, in one place!<a class="btn btn-primary pull-right" asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Add a code</a></small>
+        </h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-1">
+            <div class="container">
+                <a asp-action="All" class="btn btn-default" asp-route-deviceId="@ViewData["deviceId"]">See all</a>
+            </div>
+        </div>
+        <div class="col-md-11">
+            <form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
+                @await Html.PartialAsync("Search")
+            </form>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Create New</a> | 
-    <a asp-action="All" asp-route-deviceId="@ViewData["deviceId"]">See all</a>
-</p>
-<form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
-    @await Html.PartialAsync("Search")
-</form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Action)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ActionName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateArrived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Device.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Action)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActionName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateArrived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Device.Name)
-            </td>
-            <td>
-                @Html.Partial("TableLinks", item)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Action)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ActionName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateArrived)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Action)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ActionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateArrived)
+                    </td>
+                    <td>
+                        @Html.Partial("TableLinks", item)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+

@@ -1,55 +1,59 @@
 ﻿@model Garduino.Models.Code
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit a code";
 }
 
-<h2>Edit</h2>
 
-<h4>Code</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Action" class="control-label"></label>
-                <input asp-for="Action" class="form-control" />
-                <span asp-validation-for="Action" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateArrived" class="control-label"></label>
-                <input asp-for="DateArrived" class="form-control" />
-                <span asp-validation-for="DateArrived" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateExecuted" class="control-label"></label>
-                <input asp-for="DateExecuted" class="form-control" />
-                <span asp-validation-for="DateExecuted" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="Id" type="hidden" class="form-control" />
-                <input asp-for="DateCompleted" type="hidden" class="form-control" />
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="IsCompleted" /> @Html.DisplayNameFor(model => model.IsCompleted)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </form>
+
+<div class="jumbotron">
+    <div class="page-header">
+        <h2>@ViewData["Title"]</h2>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id"/>
+                <div class="form-group">
+                    <label asp-for="Action" class="control-label"></label>
+                    <input asp-for="Action" class="form-control"/>
+                    <span asp-validation-for="Action" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DateArrived" class="control-label"></label>
+                    <input asp-for="DateArrived" class="form-control"/>
+                    <span asp-validation-for="DateArrived" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DateExecuted" class="control-label"></label>
+                    <input asp-for="DateExecuted" class="form-control"/>
+                    <span asp-validation-for="DateExecuted" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Id" type="hidden" class="form-control"/>
+                    <input asp-for="DateCompleted" type="hidden" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input asp-for="IsCompleted"/> @Html.DisplayNameFor(model => model.IsCompleted)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-default"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
+    </div>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
 </div>
 
-<div>
-    <a asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
