@@ -59,10 +59,10 @@ namespace Garduino.Models
         public bool NetReconf => IsBitSet(15);
 
         [DisplayName("Entry count")]
-        public int EntryCount => Measures.Count;
+        public int EntryCount => Measures?.Count ?? 0;
 
         [DisplayName("Code count")]
-        public int CodeCount => Codes.Count;
+        public int CodeCount => Codes?.Count ?? 0;
 
         [DisplayName("Last time seen")]
         public DateTime LastSign { get; set; }
