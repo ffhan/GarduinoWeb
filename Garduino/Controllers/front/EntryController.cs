@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using Garduino.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using GarduinoUniversal;
+using ChartJSCore.Models;
+using Chart = ChartJSCore.Models.Chart;
 
 namespace Garduino.Controllers.front
 {
@@ -37,8 +40,103 @@ namespace Garduino.Controllers.front
         // GET: Entry
         public async Task<IActionResult> Index(Guid deviceId)
         {
+            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(deviceId)).Reverse();
+
+            ChartJSCore.Models.Chart soilM = new ChartJSCore.Models.Chart();
+            ChartJSCore.Models.Chart air = new ChartJSCore.Models.Chart();
+
+            soilM.Type = "line";
+            air.Type = "line";
+
+            ChartJSCore.Models.Data data = new ChartJSCore.Models.Data();
+            ChartJSCore.Models.Data data2 = new ChartJSCore.Models.Data();
+            data.Labels = measures.Select(g => g.DateTime.ToString("G")).ToList();
+            data2.Labels = measures.Select(g => g.DateTime.ToString("G")).ToList();
+
+            LineDataset dataset = new LineDataset()
+            {//collection.Skip(Math.Max(0, collection.Count() - N));
+            Label = "Soil moisture",
+                Data = measures.Skip(Math.Max(0, measures.Count() - 350)).Select(g => (double) g.SoilMoisture).ToList(),
+                Fill = false,
+                LineTension = 0.1,
+                BackgroundColor = "rgba(75, 192, 192, 0.4)",
+                BorderColor = "rgba(75,192,192,1)",
+                BorderCapStyle = "butt",
+                BorderDash = new List<int> { },
+                BorderDashOffset = 0.0,
+                BorderJoinStyle = "miter",
+                PointBorderColor = new List<string>() { "rgba(75,192,192,1)" },
+                PointBackgroundColor = new List<string>() { "#fff" },
+                PointBorderWidth = new List<int> { 1 },
+                PointHoverRadius = new List<int> { 5 },
+                PointHoverBackgroundColor = new List<string>() { "rgba(75,192,192,1)" },
+                PointHoverBorderColor = new List<string>() { "rgba(220,220,220,1)" },
+                PointHoverBorderWidth = new List<int> { 2 },
+                PointRadius = new List<int> { 1 },
+                PointHitRadius = new List<int> { 10 },
+                SpanGaps = false
+            };
+            LineDataset dataset2 = new LineDataset()
+            {
+                Label = "Air humidity",
+                Data = measures.Skip(Math.Max(0, measures.Count() - 350)).Select(g => (double)g.AirHumidity).ToList(),
+                Fill = false,
+                LineTension = 0.1,
+                BackgroundColor = "rgba(75, 192, 192, 0.4)",
+                BorderColor = "rgba(75,192,192,1)",
+                BorderCapStyle = "butt",
+                BorderDash = new List<int> { },
+                BorderDashOffset = 0.0,
+                BorderJoinStyle = "miter",
+                PointBorderColor = new List<string>() { "rgba(75,192,192,1)" },
+                PointBackgroundColor = new List<string>() { "#fff" },
+                PointBorderWidth = new List<int> { 1 },
+                PointHoverRadius = new List<int> { 5 },
+                PointHoverBackgroundColor = new List<string>() { "rgba(75,192,192,1)" },
+                PointHoverBorderColor = new List<string>() { "rgba(75,192,192,1)" },
+                PointHoverBorderWidth = new List<int> { 2 },
+                PointRadius = new List<int> { 1 },
+                PointHitRadius = new List<int> { 10 },
+                SpanGaps = false
+            };
+            LineDataset dataset3 = new LineDataset()
+            {
+                Label = "Air temperature",
+                Data = measures.Skip(Math.Max(0, measures.Count() - 350)).Select(g => (double)g.AirTemperature).ToList(),
+                Fill = false,
+                LineTension = 0.1,
+                BackgroundColor = "rgba(200, 60, 40, 0.4)",
+                BorderColor = "rgba(200, 60, 40,1)",
+                BorderCapStyle = "butt",
+                BorderDash = new List<int> { },
+                BorderDashOffset = 0.0,
+                BorderJoinStyle = "miter",
+                PointBorderColor = new List<string>() { "rgba(200, 60, 40,1)" },
+                PointBackgroundColor = new List<string>() { "#fff" },
+                PointBorderWidth = new List<int> { 1 },
+                PointHoverRadius = new List<int> { 5 },
+                PointHoverBackgroundColor = new List<string>() { "rgba(200, 60, 40,1)" },
+                PointHoverBorderColor = new List<string>() { "rgba(200, 60, 40,1)" },
+                PointHoverBorderWidth = new List<int> { 2 },
+                PointRadius = new List<int> { 1 },
+                PointHitRadius = new List<int> { 10 },
+                SpanGaps = false
+            };
+
+            data.Datasets = new List<Dataset>();
+            data2.Datasets = new List<Dataset>();
+            data.Datasets.Add(dataset);
+            data2.Datasets.Add(dataset2);
+            data2.Datasets.Add(dataset3);
+
+            soilM.Data = data;
+            air.Data = data2;
+
+            ViewData["chart"] = soilM;
+            ViewData["chart2"] = air;
+
             ViewData[GarduinoConstants.DeviceId] = deviceId;
-            return View(_repository.GetAll(await GetDeviceAsync(deviceId)));
+            return View(measures);
         }
 
         // GET: Entry/Details/5

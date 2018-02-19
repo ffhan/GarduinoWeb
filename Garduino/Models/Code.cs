@@ -52,6 +52,12 @@ namespace Garduino.Models
             ActionName = other.ActionName;
         }
 
+        public Code(int action, string actionName)
+        {
+            Action = action;
+            ActionName = actionName;
+        }
+
 
         public void Complete(DateTime dateExecuted)
         {

@@ -119,5 +119,49 @@ namespace Garduino.Controllers.front
             var device = await _GetDeviceAsync(deviceId.Value);
             return device ?? null;
         }
+
+        private async Task<IActionResult> CreateExisting(Code code, Guid deviceId)
+        {
+            Device dev = await _deviceRepository.GetAsync(deviceId);
+            if (dev == null) return NotFound();
+            await _repository.AddAsync(code, dev);
+            return RedirectToAction(nameof(Index), new {deviceId});
+        }
+
+        public async Task<IActionResult> CreateGlobalLock(Guid deviceId)
+        {
+            Code code = new Code(0, "Global Lock");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreateLightAdmin(Guid deviceId)
+        {
+            Code code = new Code(4, "Light Admin");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreateLightState(Guid deviceId)
+        {
+            Code code = new Code(1, "Light state");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreateMeasure(Guid deviceId)
+        {
+            Code code = new Code(5, "Measure");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreatePrintTime(Guid deviceId)
+        {
+            Code code = new Code(8, "Print time");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreateHeatState(Guid deviceId)
+        {
+            Code code = new Code(3, "Heating state");
+            return await CreateExisting(code, deviceId);
+        }
+        public async Task<IActionResult> CreateHeatAdmin(Guid deviceId)
+        {
+            Code code = new Code(6, "Heat admin");
+            return await CreateExisting(code, deviceId);
+        }
     }
 }
