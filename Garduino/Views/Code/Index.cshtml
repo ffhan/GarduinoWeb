@@ -6,14 +6,12 @@
 
 @{
     ChartJSCore.Models.Chart chart1 = (ChartJSCore.Models.Chart)ViewData["freq"];
-    ChartJSCore.Models.Chart chart2 = (ChartJSCore.Models.Chart)ViewData["exec"];
     ChartJSCore.Models.Chart chart3 = (ChartJSCore.Models.Chart)ViewData["compl"];
 }
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
     <script>
         @Html.Raw(chart1.CreateChartCode("freqChart"));
-        @Html.Raw(chart2.CreateChartCode("execChart"));
         @Html.Raw(chart3.CreateChartCode("complChart"));
     </script>
 }
@@ -25,13 +23,10 @@
         </h2>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <canvas id="freqChart"></canvas>
         </div>
-        <div class="col-md-4">
-            <canvas id="execChart"></canvas>
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <canvas id="complChart"></canvas>
         </div>
     </div>

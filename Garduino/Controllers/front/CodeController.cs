@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
 namespace Garduino.Controllers.front
@@ -52,37 +53,69 @@ namespace Garduino.Controllers.front
             }
             List<ChartJSCore.Models.Chart> charts = CreateCharts(dev);
             ViewData["freq"] = charts[0];
-            ViewData["exec"] = charts[1];
-            ViewData["compl"] = charts[2];
+            ViewData["compl"] = charts[1];
             ViewData[GarduinoConstants.DeviceId] = deviceId;
             return View(codes);
         }
 
         private List<ChartJSCore.Models.Chart> CreateCharts(Device device)
         {
+            int binNum = 6;
+
             IEnumerable<Code> codes = _repository.GetAll(device);
             var freq = codes.GroupBy(x => x.Action).ToDictionary(x => x.Key, x => x.Count());
-            var exec = codes.Where(x => x.DateArrived != DateTime.MinValue && x.DateCompleted != DateTime.MinValue &&
-            x.DateExecuted != DateTime.MinValue).GroupBy(x => (x.DateExecuted - x.DateArrived).TotalSeconds).ToDictionary(x => x.Key, x => x.Count());
-            var compl = codes.Where(x => x.DateArrived != DateTime.MinValue && x.DateCompleted != DateTime.MinValue &&
-                                        x.DateExecuted != DateTime.MinValue).GroupBy(x => (x.DateCompleted - x.DateExecuted).TotalSeconds).ToDictionary(x => x.Key, x => x.Count());
+            IEnumerable<double> compl = codes.Where(x => x.DateArrived != DateTime.MinValue && x.DateCompleted != DateTime.MinValue &&
+                                        x.DateExecuted != DateTime.MinValue).Select(x => (x.DateCompleted - x.DateArrived).TotalSeconds);
 
             ChartJSCore.Models.Chart frequency = new ChartJSCore.Models.Chart();
-            ChartJSCore.Models.Chart timeToExecution = new ChartJSCore.Models.Chart();
             ChartJSCore.Models.Chart timeToComplete = new ChartJSCore.Models.Chart();
 
             frequency.Type = "bar";
-            timeToExecution.Type = "bar";
             timeToComplete.Type = "bar";
+
 
             ChartJSCore.Models.Data freqData = new ChartJSCore.Models.Data();
             freqData.Labels = freq.Keys.Select(x => x.ToString()).ToList();
 
-            ChartJSCore.Models.Data execData = new ChartJSCore.Models.Data();
-            execData.Labels = exec.Keys.Select(x => x.ToString("G")).ToList();
+            double lowerCompl;
+            double upperCompl;
+            if (compl.Any())
+            {
+                lowerCompl = compl.Min();
+                upperCompl = compl.Max();
+            }
+            else
+            {
+                lowerCompl = 0;
+                upperCompl = 0;
+            }
+            
+            double complRange = (upperCompl - lowerCompl) / binNum;
+
+            List<string> complBins = new List<string>();
+            for (int i = 0; i < binNum; i++)
+            {
+                complBins.Add($"{lowerCompl + i * complRange:f1}-{lowerCompl + (i + 1) * complRange:f1}");
+            }
+
+            int[] complPoints = new int[binNum];
+            foreach (var value in compl)
+            {
+                int bucketIndex = 0;
+                if (complRange > 0.0)
+                {
+                    bucketIndex = (int)((value - lowerCompl) / complRange);
+                    if (bucketIndex == binNum)
+                    {
+                        bucketIndex--;
+                    }
+                }
+                complPoints[bucketIndex]++;
+            }
+
 
             ChartJSCore.Models.Data completeData = new ChartJSCore.Models.Data();
-            completeData.Labels = compl.Keys.Select(x => x.ToString("G")).ToList();
+            completeData.Labels = complBins;
 
             BarDataset freqDataset = new BarDataset()
             {
@@ -95,20 +128,10 @@ namespace Garduino.Controllers.front
             freqData.Datasets = new List<Dataset>();
             freqData.Datasets.Add(freqDataset);
 
-            BarDataset execDataset = new BarDataset()
-            {
-                Label = "Execution time in seconds",
-                Data = exec.Values.Select(x => (double)x).ToList(),
-                BackgroundColor = new List<string>(),
-                BorderWidth = new List<int>() { 1 }
-            };
-            execData.Datasets = new List<Dataset>();
-            execData.Datasets.Add(execDataset);
-
             BarDataset complDateDataset = new BarDataset()
             {
                 Label = "Complete time in seconds",
-                Data = compl.Values.Select(x => (double)x).ToList(),
+                Data = complPoints.Select(x => (double)x).ToList(),
                 BackgroundColor = new List<string>(),
                 BorderWidth = new List<int>() { 1 }
             };
@@ -117,7 +140,6 @@ namespace Garduino.Controllers.front
             completeData.Datasets.Add(complDateDataset);
 
             frequency.Data = freqData;
-            timeToExecution.Data = execData;
             timeToComplete.Data = completeData;
 
             BarOptions options = new BarOptions()
@@ -143,13 +165,11 @@ namespace Garduino.Controllers.front
             options.Scales = scales;
 
             frequency.Options = options;
-            timeToExecution.Options = options;
             timeToComplete.Options = options;
 
             return new List<ChartJSCore.Models.Chart>
             {
                 frequency,
-                timeToExecution,
                 timeToComplete
             };
         }
@@ -166,8 +186,7 @@ namespace Garduino.Controllers.front
             }
             List<ChartJSCore.Models.Chart> charts = CreateCharts(dev);
             ViewData["freq"] = charts[0];
-            ViewData["exec"] = charts[1];
-            ViewData["compl"] = charts[2];
+            ViewData["compl"] = charts[1];
             ViewData[GarduinoConstants.DeviceId] = deviceId;
             return View(codes);
         }
