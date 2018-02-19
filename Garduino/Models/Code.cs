@@ -40,12 +40,6 @@ namespace Garduino.Models
         [JsonIgnore]
         public virtual Device Device { get; set; }
 
-        public Code(CodeViewModel codeViewModel)
-        {
-            ActionName = codeViewModel.ActionName;
-            Action = codeViewModel.Action;
-        }
-
         public Code(Code other)
         {
             Action = other.Action;

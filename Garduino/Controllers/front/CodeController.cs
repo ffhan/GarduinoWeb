@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChartJSCore.Models;
+using ChartJSCore.Models.Bar;
 //using System.Web.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
@@ -37,16 +40,136 @@ namespace Garduino.Controllers.front
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(Guid deviceId)
+        public async Task<IActionResult> Index(Guid deviceId, string searchString)
         {
+            string srch = StringOperations.PrepareForSearch(searchString);
+            Device dev = await GetDeviceAsync(deviceId);
+            IEnumerable<Code> codes = _repository.GetActive(dev);
+            if (!string.IsNullOrWhiteSpace(srch))
+            {
+                codes = codes?.Where(g => g.ActionName.Equals(srch));
+                ViewData["searchInput"] = srch;
+            }
+            List<ChartJSCore.Models.Chart> charts = CreateCharts(dev);
+            ViewData["freq"] = charts[0];
+            ViewData["exec"] = charts[1];
+            ViewData["compl"] = charts[2];
             ViewData[GarduinoConstants.DeviceId] = deviceId;
-            return View(_repository.GetActive(await GetDeviceAsync(deviceId)));
+            return View(codes);
         }
 
-        public async Task<IActionResult> All(Guid deviceId)
+        private List<ChartJSCore.Models.Chart> CreateCharts(Device device)
         {
+            IEnumerable<Code> codes = _repository.GetAll(device);
+            var freq = codes.GroupBy(x => x.Action).ToDictionary(x => x.Key, x => x.Count());
+            var exec = codes.Where(x => x.DateArrived != DateTime.MinValue && x.DateCompleted != DateTime.MinValue &&
+            x.DateExecuted != DateTime.MinValue).GroupBy(x => (x.DateExecuted - x.DateArrived).TotalSeconds).ToDictionary(x => x.Key, x => x.Count());
+            var compl = codes.Where(x => x.DateArrived != DateTime.MinValue && x.DateCompleted != DateTime.MinValue &&
+                                        x.DateExecuted != DateTime.MinValue).GroupBy(x => (x.DateCompleted - x.DateExecuted).TotalSeconds).ToDictionary(x => x.Key, x => x.Count());
+
+            ChartJSCore.Models.Chart frequency = new ChartJSCore.Models.Chart();
+            ChartJSCore.Models.Chart timeToExecution = new ChartJSCore.Models.Chart();
+            ChartJSCore.Models.Chart timeToComplete = new ChartJSCore.Models.Chart();
+
+            frequency.Type = "bar";
+            timeToExecution.Type = "bar";
+            timeToComplete.Type = "bar";
+
+            ChartJSCore.Models.Data freqData = new ChartJSCore.Models.Data();
+            freqData.Labels = freq.Keys.Select(x => x.ToString()).ToList();
+
+            ChartJSCore.Models.Data execData = new ChartJSCore.Models.Data();
+            execData.Labels = exec.Keys.Select(x => x.ToString("G")).ToList();
+
+            ChartJSCore.Models.Data completeData = new ChartJSCore.Models.Data();
+            completeData.Labels = compl.Keys.Select(x => x.ToString("G")).ToList();
+
+            BarDataset freqDataset = new BarDataset()
+            {
+                Label = "Frequency of Actions",
+                Data = freq.Values.Select(x => (double)x).ToList(),
+                BackgroundColor = new List<string>(),
+                BorderWidth = new List<int>() { 1 }
+            };
+
+            freqData.Datasets = new List<Dataset>();
+            freqData.Datasets.Add(freqDataset);
+
+            BarDataset execDataset = new BarDataset()
+            {
+                Label = "Execution time in seconds",
+                Data = exec.Values.Select(x => (double)x).ToList(),
+                BackgroundColor = new List<string>(),
+                BorderWidth = new List<int>() { 1 }
+            };
+            execData.Datasets = new List<Dataset>();
+            execData.Datasets.Add(execDataset);
+
+            BarDataset complDateDataset = new BarDataset()
+            {
+                Label = "Complete time in seconds",
+                Data = compl.Values.Select(x => (double)x).ToList(),
+                BackgroundColor = new List<string>(),
+                BorderWidth = new List<int>() { 1 }
+            };
+
+            completeData.Datasets = new List<Dataset>();
+            completeData.Datasets.Add(complDateDataset);
+
+            frequency.Data = freqData;
+            timeToExecution.Data = execData;
+            timeToComplete.Data = completeData;
+
+            BarOptions options = new BarOptions()
+            {
+                Scales = new Scales(),
+                BarPercentage = 0.7
+            };
+
+            Scales scales = new Scales()
+            {
+                YAxes = new List<Scale>()
+                {
+                    new CartesianScale()
+                    {
+                        Ticks = new CartesianLinearTick()
+                        {
+                            BeginAtZero = true
+                        }
+                    }
+                }
+            };
+
+            options.Scales = scales;
+
+            frequency.Options = options;
+            timeToExecution.Options = options;
+            timeToComplete.Options = options;
+
+            return new List<ChartJSCore.Models.Chart>
+            {
+                frequency,
+                timeToExecution,
+                timeToComplete
+            };
+        }
+
+        public async Task<IActionResult> All(Guid deviceId, string searchString)
+        {
+            string srch = StringOperations.PrepareForSearch(searchString);
+            Device dev = await GetDeviceAsync(deviceId);
+            IEnumerable<Code> codes = _repository.GetAll(dev);
+            if (!string.IsNullOrWhiteSpace(srch))
+            {
+                codes = codes?.Where(g => g.ActionName.Equals(srch));
+                ViewData["searchInput"] = srch;
+            }
+            List<ChartJSCore.Models.Chart> charts = CreateCharts(dev);
+            ViewData["freq"] = charts[0];
+            ViewData["exec"] = charts[1];
+            ViewData["compl"] = charts[2];
             ViewData[GarduinoConstants.DeviceId] = deviceId;
-            return View(_repository.GetAll(await GetDeviceAsync(deviceId)));
+            return View(codes);
         }
 
         public IActionResult Create(Guid deviceId)

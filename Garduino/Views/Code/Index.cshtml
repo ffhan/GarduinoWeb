@@ -4,13 +4,37 @@
     ViewData["Title"] = "Active codes";
 }
 
+@{
+    ChartJSCore.Models.Chart chart1 = (ChartJSCore.Models.Chart)ViewData["freq"];
+    ChartJSCore.Models.Chart chart2 = (ChartJSCore.Models.Chart)ViewData["exec"];
+    ChartJSCore.Models.Chart chart3 = (ChartJSCore.Models.Chart)ViewData["compl"];
+}
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
+    <script>
+        @Html.Raw(chart1.CreateChartCode("freqChart"));
+        @Html.Raw(chart2.CreateChartCode("execChart"));
+        @Html.Raw(chart3.CreateChartCode("complChart"));
+    </script>
+}
+
 <div class="jumbotron">
     <div class="page-header">
         <h2>
             @ViewData["Title"] <small>&nbsp;Your active codes, in one place!<a class="btn btn-primary pull-right" asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Add a code</a></small>
         </h2>
     </div>
-    
+    <div class="row">
+        <div class="col-md-4">
+            <canvas id="freqChart"></canvas>
+        </div>
+        <div class="col-md-4">
+            <canvas id="execChart"></canvas>
+        </div>
+        <div class="col-md-4">
+            <canvas id="complChart"></canvas>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-1">
             <div class="container">
@@ -18,50 +42,48 @@
             </div>
         </div>
         <div class="col-md-11">
-            <form asp-controller="Code" asp-action="Index" asp-route-deviceId="@ViewData["deviceId"]" method="get">
-                @await Html.PartialAsync("Search")
-            </form>
+            @await Html.PartialAsync("Search", "Index")
         </div>
     </div>
 
     <div class="table-responsive">
         <table class="table">
             <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Action)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ActionName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DateArrived)
-                </th>
-                <th></th>
-            </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Action)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ActionName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateArrived)
+                    </th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Action)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ActionName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DateArrived)
-                    </td>
-                    <td>
-                        @Html.Partial("TableLinks", item)
-                    </td>
-                </tr>
-            }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Action)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActionName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateArrived)
+                        </td>
+                        <td>
+                            @Html.Partial("TableLinks", item)
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
-    
+
 
 </div>
 

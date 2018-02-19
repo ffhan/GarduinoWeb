@@ -151,89 +151,90 @@
             For further information please refer to the link above.
         </div>
     </div>
-    <div class="panel panel-danger">
-        <div class="panel-heading">
-            <div class="panel-title">All current supported Actions</div>
-        </div>
-        <div class="panel-body">
-            <p>
-                Garduino web API is designed to be able to send <b>any</b> code to <b>any</b> device, though it is advisable to keep it simple and 
-                follow at least these Actions:
-            </p>
-            <div class="table-bordered">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Action</th>
-                        <th>Action name</th>
-                        <th>Description</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>Global lock</td>
-                        <td>Enables custom modifications to the device operations. If Global lock is ON everything in the system happens automatically, as designed</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Light state</td>
-                        <td>Turns lights ON or OFF - if Light admin is ON</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Logging</td>
-                        <td>Turns logging to SD card ON or OFF if Global lock is OFF</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Heating state</td>
-                        <td>Turns heating ON or OFF - if Heat admin is ON</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Light admin</td>
-                        <td>Turns off system control of lighting - user controls if lights are ON or OFF</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Measure values</td>
-                        <td>Measures values from all sensors and sends it to web API and SD card if Logging is ON</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Heating admin</td>
-                        <td>Turns off system control of heating - user controls if heating is ON or OFF</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Watering state</td>
-                        <td>Turns watering ON or OFF - if Watering admin is ON</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Print time</td>
-                        <td>Prints device time to the console</td>
-                    </tr>
-                    <tr>
-                        <td>200</td>
-                        <td>Update device ID</td>
-                        <td>Device sends its' name to web API which sends device ID back</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>
-                The main principle for extending and customizing Garduino system is that there has to be a clear distinction between what's
-                user controlled and what is device controlled.<br/>
-                This ensures that device runs exactly as intended and enables long-distance control, since you don't have to be near the device
-                to know that it functions properly.<br/>
-            </p>
-            <p>
-                For example, turning the lights to always be ON require <code>Global lock OFF</code>&rarr;<code>Light admin ON</code>&rarr;<code>Lights ON</code><br/>
-                If there is something wrong with how the device runs you can easily look at its' internal state in <span class="text-primary">Device</span> details.
-            </p>
-        </div>
+<div class="panel panel-danger">
+    <div class="panel-heading">
+        <div class="panel-title">All current supported Actions</div>
     </div>
+    <div class="panel-body">
+        <p>
+            Garduino web API is designed to be able to send <b>any</b> code to <b>any</b> device, though it is advisable to keep it simple and 
+            follow at least these Actions:
+        </p>
+        <div class="table-bordered">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Action name</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Global lock</td>
+                    <td>Enables custom modifications to the device operations. If Global lock is ON everything in the system happens automatically, as designed</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Light state</td>
+                    <td>Turns lights ON or OFF - if Light admin is ON</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Logging</td>
+                    <td>Turns logging to SD card ON or OFF if Global lock is OFF</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Heating state</td>
+                    <td>Turns heating ON or OFF - if Heat admin is ON</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Light admin</td>
+                    <td>Turns off system control of lighting - user controls if lights are ON or OFF</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Measure values</td>
+                    <td>Measures values from all sensors and sends it to web API and SD card if Logging is ON</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Heating admin</td>
+                    <td>Turns off system control of heating - user controls if heating is ON or OFF</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Watering state</td>
+                    <td>Turns watering ON or OFF - if Watering admin is ON</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Print time</td>
+                    <td>Prints device time to the console</td>
+                </tr>
+                <tr>
+                    <td>200</td>
+                    <td>Update device ID</td>
+                    <td>Device sends its' name to web API which sends device ID back</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            The main principle for extending and customizing Garduino system is that there has to be a clear distinction between what's
+            user controlled and what is device controlled.<br/>
+            This ensures that device runs exactly as intended and enables long-distance control, since you don't have to be near the device
+            to know that it functions properly.<br/>
+        </p>
+        <p>
+            For example, turning the lights to always be ON require <code>Global lock OFF</code>&rarr;<code>Light admin ON</code>&rarr;<code>Lights ON</code><br/>
+            If there is something wrong with how the device runs you can easily look at its' internal state in <span class="text-primary">Device</span> details.
+        </p>
+    </div>
+</div>
+<p>For more see <a href="http://github.com/ffhan/GarduinoWeb" class="text-success">Garduino Web</a> & <a href="http://github.com/ffhan/garduino" class="text-primary">Garduino system</a></p>
 </div>
 

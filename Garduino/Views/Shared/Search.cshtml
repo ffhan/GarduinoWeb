@@ -1,10 +1,16 @@
-﻿@*
+﻿@model string
+@*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-<div class="input-group">
-    <input type="text" class="form-control" placeholder="Search for..." name="id" value="@ViewData["searchInput"]">
+<form asp-controller="Code" asp-action="@Model" asp-route-deviceId="@ViewData["deviceId"]" method="get">
+    <input type="hidden" value="@ViewData["deviceId"]" name="deviceId" />
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search for..." name="searchString" value="@ViewData["searchInput"]">
+
     <span class="input-group-btn">
         <button class="btn btn-default" type="submit">Search</button>
     </span>
-</div>
+    </div>
+</form>
+
