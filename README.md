@@ -1,5 +1,7 @@
 # Garduino Project
 
+Ovo je repozitorij za ASP.NET aplikaciju za projekt. Objašnjenje samog projekta se nalazi na [glavnom repozitoriju sistema](https://github.com/ffhan/garduino) i na [stranici](http://garduinoproject.azurewebsites.net/)
+
 ## Garduino web API
 * RESTful web api
 * Enables any device to connect to the server, log in, register, send its' data (currently strictly limited), issue and receive 
