@@ -5,6 +5,45 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function(){
+            function refreshPartial(){
+                //this will wait 3 seconds and then fire the load partial function
+                setTimeout(function(){
+                    loadPartialView();
+                    //recall this function so that it will continue to loop
+                    refreshPartial();
+                }, 3000);
+            }
+            //initialize the loop
+            refreshPartial();
+        });
+
+        function loadPartialView() {
+            $.ajax({
+                url: '@Url.Action("GetDeviceItems", "Device")',
+                type: 'post',
+                cache: false,
+                async: true,
+                data: { },
+                success: function(result){
+                    $('#devices').html(result);
+                },
+                error: function() {
+                    $('#devices').html("nothing.");
+                }
+            });
+        }
+    </script>
+    
+    <script type="text/javascript">
+        
+        
+    </script>
+    
+}
 <div class="jumbotron">
     <div class="page-header">
         <h2>
@@ -13,119 +52,8 @@
     </div>
     <br />
     <ul class="list-group">
-        @foreach (var item in Model)
-        {
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-md-2">
-                        @{
-                            if (item.Alive)
-                            {
-                                <span class="glyphicon glyphicon-ok text-success" title="Device is responding" style="margin-right: 2px"></span>
-                            }
-                            else
-                            {
-                                <span class="glyphicon glyphicon-remove text-danger" title="Device is not connected" style="margin-right: 2px"></span>
-                            }
-                        }
-                        @Html.DisplayFor(model => item.Name)
-                    </div>
-                    <div class="col-md-6">
-                        <div class="container-fluid text-center">
-                            @{
-                            if (true)
-                            {
-                                if (!item.GlobalLock)
-                                {
-                                    <span class="glyphicon glyphicon-user text-success" title="Global lock OFF: User can control this device">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-user text-danger" title="Global lock ON: User can't control this device">&nbsp;</span>
-                                }
-                                if (item.Logging)
-                                {
-                                    <span class="glyphicon glyphicon-floppy-saved text-success" title="Device is writing to local SD card">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-floppy-remove text-danger" title="Device is not writing to local SD card">&nbsp;</span>
-                                }
-                                if (item.IsInitialised)
-                                {
-                                    <span class="glyphicon glyphicon-hdd text-success" title="Device has initialised local storage">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-hdd text-danger" title="Device has not initialised local storage">&nbsp;</span>
-                                }
-                                if (item.LightState)
-                                {
-                                    <span class="glyphicon glyphicon-asterisk text-warning" title="Lights are ON">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-asterisk" title="Lights are OFF">&nbsp;</span>
-                                }
-                                if (item.LightAdmin)
-                                {
-                                    <span class="glyphicon glyphicon-flash text-primary" title="Light Admin is ON: User is controlling lights">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-flash" title="Light Admin is OFF: Lights are automatically controlled">&nbsp;</span>
-                                }
-                                if (item.HeatState)
-                                {
-                                    <span class="glyphicon glyphicon-heart text-warning" title="Heating is ON">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-heart" title="Heating is OFF">&nbsp;</span>
-                                }
-                                if (item.HeatAdmin)
-                                {
-                                    <span class="glyphicon glyphicon-wrench text-primary" title="Heating Admin is ON: User can control heating">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-wrench" title="Heating Admin is OFF: User can't control heating">&nbsp;</span>
-                                }
-                                if (item.WaterState)
-                                {
-                                    <span class="glyphicon glyphicon-tint text-warning" title="Device is watering plants">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-tint" title="Device is not watering plants">&nbsp;</span>
-                                }
-                                if (item.WaterAdmin)
-                                {
-                                    <span class="glyphicon glyphicon-tree-deciduous text-primary" title="Watering Admin is ON: User can control plant watering">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span class="glyphicon glyphicon-tree-deciduous" title="Watering Admin is OFF: User can't control plant watering">&nbsp;</span>
-                                }
-                            }
-
-                        }
-                        </div>
-                    </div>
-                    <div class="col-md-4" style="padding-right: 5px;">
-                        <div class="container-fluid pull-right">
-                            <a asp-action="SendToEntry" asp-route-deviceId="@item.Id"><span class="badge">Entries @item.EntryCount</span></a>
-                            <a asp-action="SendToCode" asp-route-deviceId="@item.Id"><span class="badge">Codes @item.CodeCount</span></a>
-                            <a asp-action="Edit" asp-route-id="@item.Id"><span style="margin-left: 15px;"class="label label-info">Edit</span></a>
-                            <a asp-action="Details" asp-route-id="@item.Id"><span class="label label-warning">Details</span></a>
-                            <a asp-action="Delete" asp-route-id="@item.Id"><span class="label label-danger">Delete</span></a>
-                        </div>
-                        
-                    </div>
-                </div>
-        
-            </li>
-            
-    }
+        <div id="devices">
+            @await Html.PartialAsync("DeviceItems", Model);
+        </div>
     </ul>
 </div>

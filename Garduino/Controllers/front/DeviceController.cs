@@ -146,6 +146,14 @@ namespace Garduino.Controllers.front
             return View(device);
         }
 
+        [HttpPost]
+        public async Task<PartialViewResult> GetDeviceItems()
+        {
+            var devices = _repository.GetAll(await GetCurrentUserAsync());
+            ModelState.Clear();
+            return PartialView("DeviceItems", devices);
+        }
+
         // POST: Device/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

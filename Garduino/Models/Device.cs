@@ -81,7 +81,7 @@ namespace Garduino.Models
         public TimeSpan TimeSinceSign => (DateTime.UtcNow - LastSign);
 
         [DisplayName("Is alive?")]
-        public bool Alive => TimeSinceSign.TotalMinutes <= 30;
+        public bool Alive => TimeSinceSign.TotalMinutes <= 10;
 
         public void SetUser(User user) => User = user;
 
