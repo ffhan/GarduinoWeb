@@ -37,11 +37,8 @@ namespace Garduino.Controllers.front
             _userManager = userManager;
         }
 
-        // GET: Entry
-        public async Task<IActionResult> Index(Guid deviceId)
+        public async Task<IList<ChartJSCore.Models.Chart>> CreateCharts(IEnumerable<Measure> measures)
         {
-            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(deviceId)).Reverse();
-
             ChartJSCore.Models.Chart soilM = new ChartJSCore.Models.Chart();
             ChartJSCore.Models.Chart air = new ChartJSCore.Models.Chart();
 
@@ -55,8 +52,8 @@ namespace Garduino.Controllers.front
 
             LineDataset dataset = new LineDataset()
             {//collection.Skip(Math.Max(0, collection.Count() - N));
-            Label = "Soil moisture",
-                Data = measures.Skip(Math.Max(0, measures.Count() - 350)).Select(g => (double) g.SoilMoisture).ToList(),
+                Label = "Soil moisture",
+                Data = measures.Skip(Math.Max(0, measures.Count() - 350)).Select(g => (double)g.SoilMoisture).ToList(),
                 Fill = false,
                 LineTension = 0.1,
                 BackgroundColor = "rgba(75, 192, 192, 0.4)",
@@ -132,8 +129,18 @@ namespace Garduino.Controllers.front
             soilM.Data = data;
             air.Data = data2;
 
-            ViewData["chart"] = soilM;
-            ViewData["chart2"] = air;
+            return new List<ChartJSCore.Models.Chart> {soilM, air};
+        }
+
+        // GET: Entry
+        public async Task<IActionResult> Index(Guid deviceId)
+        {
+            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(deviceId)).Reverse();
+
+            IList<ChartJSCore.Models.Chart> charts = await CreateCharts(measures);
+
+            ViewData["chart"] = charts[0];
+            ViewData["chart2"] = charts[1];
 
             ViewData[GarduinoConstants.DeviceId] = deviceId;
             return View(measures);
@@ -223,6 +230,19 @@ namespace Garduino.Controllers.front
             Guid deviceId = await GetDeviceId(id);
             await _repository.DeleteAsync(id);
             return RedirectToAction(nameof(Index), new { deviceId });
+        }
+
+        public class AjaxPost
+        {
+            public Guid DeviceId { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<PartialViewResult> GetCharts([FromBody] AjaxPost ajaxPost)
+        {
+            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(ajaxPost.DeviceId));
+            IList<ChartJSCore.Models.Chart> charts = await CreateCharts(measures);
+            return PartialView("Graphs", charts);
         }
 
         private async Task<bool> MeasureExists(Guid id)

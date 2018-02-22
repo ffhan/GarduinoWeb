@@ -6,7 +6,7 @@
 }
 
 @section Scripts
-{
+    {
     <script type="text/javascript">
         $(document).ready(function(){
             function refreshPartial(){
@@ -37,12 +37,7 @@
             });
         }
     </script>
-    
-    <script type="text/javascript">
-        
-        
-    </script>
-    
+
 }
 <div class="jumbotron">
     <div class="page-header">
@@ -53,7 +48,7 @@
     <br />
     <ul class="list-group">
         <div id="devices">
-            @await Html.PartialAsync("DeviceItems", Model);
+            @await Html.PartialAsync("DeviceItems", Model)
         </div>
     </ul>
 </div>

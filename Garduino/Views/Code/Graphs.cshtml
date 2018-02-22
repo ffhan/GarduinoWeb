@@ -1,0 +1,21 @@
+﻿@model IList<ChartJSCore.Models.Chart>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ChartJSCore.Models.Chart chart1 = (ChartJSCore.Models.Chart)Model[0];
+    ChartJSCore.Models.Chart chart3 = (ChartJSCore.Models.Chart) Model[1];
+}
+<div class="row">
+    <div class="col-md-6">
+        <canvas id="freqChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="complChart"></canvas>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
+<script>
+    @Html.Raw(chart1.CreateChartCode("freqChart"));
+    @Html.Raw(chart3.CreateChartCode("complChart"));
+</script>

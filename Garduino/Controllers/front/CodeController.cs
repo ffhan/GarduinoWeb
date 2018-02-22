@@ -305,5 +305,39 @@ namespace Garduino.Controllers.front
             Code code = new Code(6, "Heat admin");
             return await CreateExisting(code, deviceId);
         }
+
+        public class JsonDump
+        {
+            public Guid deviceId { get; set; }
+            public string searchString { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<PartialViewResult> GetActiveAjax([FromBody] JsonDump json)
+        {
+            string srch = StringOperations.PrepareForSearch(json.searchString);
+            Device dev = await GetDeviceAsync(json.deviceId);
+            IEnumerable<Code> codes = _repository.GetActive(dev);
+            if (!string.IsNullOrWhiteSpace(srch))
+            {
+                codes = codes?.Where(g => g.ActionName.Equals(srch));
+                ViewData["searchInput"] = srch;
+            }
+            return PartialView("ActiveCodesPartial", codes);
+        }
+        [HttpPost]
+        public async Task<PartialViewResult> GetAllAjax([FromBody] JsonDump json)
+        {
+            string srch = StringOperations.PrepareForSearch(json.searchString);
+            Device dev = await GetDeviceAsync(json.deviceId);
+            IEnumerable<Code> codes = _repository.GetAll(dev);
+            if (!string.IsNullOrWhiteSpace(srch))
+            {
+                codes = codes?.Where(g => g.ActionName.Equals(srch));
+                ViewData["searchInput"] = srch;
+            }
+            return PartialView("AllCodesPartial", codes);
+        }
+
     }
 }

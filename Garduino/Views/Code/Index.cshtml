@@ -1,18 +1,47 @@
-﻿@model IEnumerable<Garduino.Models.Code>
+﻿@using Chart = ChartJSCore.Models.Chart
+@model IEnumerable<Garduino.Models.Code>
 
 @{
     ViewData["Title"] = "Active codes";
 }
 
-@{
-    ChartJSCore.Models.Chart chart1 = (ChartJSCore.Models.Chart)ViewData["freq"];
-    ChartJSCore.Models.Chart chart3 = (ChartJSCore.Models.Chart)ViewData["compl"];
-}
-@section Scripts{
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
-    <script>
-        @Html.Raw(chart1.CreateChartCode("freqChart"));
-        @Html.Raw(chart3.CreateChartCode("complChart"));
+@section Scripts
+{
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            function refreshPartial() {
+                //this will wait 3 seconds and then fire the load partial function
+                setTimeout(function() {
+                        loadPartialView();
+                        //recall this function so that it will continue to loop
+                        refreshPartial();
+                    },
+                    3000);
+            }
+
+            //initialize the loop
+            refreshPartial();
+        });
+
+        function loadPartialView() {
+            var datum = "{\"deviceId\":\"@ViewData["deviceId"]\",\"searchString\":\"@ViewData["searchInput"]\"}";
+            $.ajax({
+                url: '@Url.Action("GetActiveAjax", "Code")',
+                type: 'post',
+                cache: false,
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: datum,
+                success: function(result) {
+                    $('#codes').html(result);
+                },
+                error: function(req, err) {
+                    console.log(err)
+                    $('#codes').html("error.");
+                }
+            });
+        }
     </script>
 }
 
@@ -22,13 +51,8 @@
             @ViewData["Title"] <small>&nbsp;Your active codes, in one place!<a class="btn btn-primary pull-right" asp-action="Create" asp-route-deviceId="@ViewData["deviceId"]">Add a code</a></small>
         </h2>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <canvas id="freqChart"></canvas>
-        </div>
-        <div class="col-md-6">
-            <canvas id="complChart"></canvas>
-        </div>
+    <div id="graphs">
+        @await Html.PartialAsync("Graphs", new List<Chart> { (ChartJSCore.Models.Chart)ViewData["freq"], (ChartJSCore.Models.Chart)ViewData["compl"] })
     </div>
     <div class="row">
         <div class="col-md-1">
@@ -41,42 +65,8 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Action)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ActionName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.DateArrived)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Action)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ActionName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.DateArrived)
-                        </td>
-                        <td>
-                            @Html.Partial("TableLinks", item)
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div id="codes">
+        @await Html.PartialAsync("ActiveCodesPartial", Model)
     </div>
 
 
