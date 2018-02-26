@@ -4,8 +4,11 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Garduino.Hubs;
 using GarduinoUniversal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 namespace Garduino.Models
@@ -82,6 +85,11 @@ namespace Garduino.Models
 
         [DisplayName("Is alive?")]
         public bool Alive => TimeSinceSign.TotalMinutes <= 2;
+
+        public void Notify(IHubContext<DeviceHub> hub)
+        {
+            hub.Clients.Group(User.Name).InvokeAsync("updateState", Name, Alive ? "has connected!" : "has died.");
+        }
 
         public void SetUser(User user) => User = user;
 

@@ -11,8 +11,15 @@ namespace Garduino.Models
     {
         public string Id { get; set; }
 
+        public string Name { get; set; }
+
         public virtual ICollection<Device> Devices { get; set; }
 
         public bool IsUser(string id) => StringOperations.IsFromUser(Id, id);
+
+        public void Update(User user)
+        {
+            Name = user.Name;
+        }
     }
 }

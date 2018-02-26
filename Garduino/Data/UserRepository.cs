@@ -32,5 +32,23 @@ namespace Garduino.Data
             }
             return true;
         }
+
+        public async Task<bool> UpdateAsync(User user)
+        {
+            if (user.Id == null) return false;
+            User usr = await GetAsync(user.Id);
+            if (usr == null) return false;
+            usr.Update(user);
+            _context.Entry(usr).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Models;
 using Garduino.Models.AccountViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -21,14 +22,17 @@ namespace Garduino.Controllers.api.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IUserRepository userRepository
         )
         {
+            _userRepository = userRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
@@ -60,6 +64,8 @@ namespace Garduino.Controllers.api.Account
 
             if (result.Succeeded)
             {
+                User usr = new User { Name = user.UserName, Id = user.Id, Devices = new HashSet<Device>() };
+                await _userRepository.AddAsync(usr);
                 await _signInManager.SignInAsync(user, false);
                 return await GenerateJwtToken(model.Email, user);
             }

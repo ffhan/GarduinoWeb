@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Garduino.Controllers
@@ -67,6 +68,10 @@ namespace Garduino.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    User usr = await _userRepository.GetAsync(
+                        (await _userManager.Users.FirstOrDefaultAsync(g => g.UserName.Equals(model.Email))).Id);
+                    if (string.IsNullOrWhiteSpace(usr.Name)) usr.Name = model.Email;
+                    await _userRepository.UpdateAsync(usr);
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -226,7 +231,7 @@ namespace Garduino.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    var user2 = new User { Id = user.Id, Devices = new HashSet<Device>() };
+                    var user2 = new User { Id = user.Id, Devices = new HashSet<Device>(), Name = user.UserName };
                     await _userRepository.AddAsync(user2);
                     _logger.LogInformation("User created a new account with password.");
 

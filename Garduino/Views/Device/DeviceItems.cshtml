@@ -13,14 +13,15 @@
                 @{
                     if (item.Alive)
                     {
-                        <span class="glyphicon glyphicon-play-circle text-success" title="Device is responding" style="margin-right: 2px"></span>
+                        <span id="@item.Name" class="glyphicon glyphicon-play-circle text-success" title="Device is responding" style="margin-right: 2px"></span>
                     }
                     else
                     {
-                        <span id="state" class="glyphicon glyphicon-play-circle text-danger" title="Device is not connected" style="margin-right: 2px"></span>
+                        <span id="@item.Name" class="glyphicon glyphicon-play-circle text-danger" title="Device is not connected" style="margin-right: 2px"></span>
                     }
                 }
                 @Html.DisplayFor(model => item.Name)
+                
             </div>
             <div class="col-md-6">
                 <div class="container-fluid text-center">
@@ -114,6 +115,7 @@
                 </div>
 
             </div>
+
         </div>
 
     </li>

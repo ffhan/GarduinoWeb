@@ -5,12 +5,14 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Garduino.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Garduino.Hubs
 {
+    [Authorize]
     public class DeviceHub : Hub
     {
 

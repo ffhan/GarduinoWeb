@@ -10,5 +10,6 @@ namespace Garduino.Data.Interfaces
     {
         Task<User> GetAsync(string id);
         Task<bool> AddAsync(User user);
+        Task<bool> UpdateAsync(User user);
     }
 }

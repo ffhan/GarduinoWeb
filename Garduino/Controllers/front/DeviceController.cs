@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
 using Garduino.Models;
-using Garduino.Models.ViewModels;
-using GarduinoUniversal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
@@ -144,6 +138,7 @@ namespace Garduino.Controllers.front
         [HttpPost]
         public async Task<PartialViewResult> GetDeviceItems()
         {
+
             var devices = _repository.GetAll(await GetCurrentUserAsync());
             ModelState.Clear();
             return PartialView("DeviceItems", devices);

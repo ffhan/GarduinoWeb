@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Data.Interfaces;
+using Garduino.Hubs;
 using Garduino.Models;
 using GarduinoUniversal;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -14,8 +17,16 @@ namespace Garduino.Data
         //TODO: security fixes - currently it's possible to get, & update data without being it's owner.
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<DeviceHub> _hubContext;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DeviceRepository(ApplicationDbContext context) => _context = context;
+        public DeviceRepository(IHubContext<DeviceHub> hubContext,
+            ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _hubContext = hubContext;
+            _context = context;
+            _userManager = userManager;
+        }
 
         public async Task<bool> AddAsync(Device what, User user)
         {
@@ -53,6 +64,12 @@ namespace Garduino.Data
         {
             var device = await GetAsync(id);
             if (device is null) return false;
+
+            if (device.Alive ^ what.Alive)
+                await _hubContext.Clients.Group((await _userManager.Users.FirstOrDefaultAsync(
+                    g => g.Id.Equals(device.User.Id))).UserName).InvokeAsync(device.Name,
+                    what.Alive ? "has connected!" : "has died.");
+
             device.Update(what);
             _context.Entry(device).State = EntityState.Modified;
             try
@@ -122,5 +139,7 @@ namespace Garduino.Data
                 await AddAsync(device, user);
             }
         }
+
+
     }
 }
