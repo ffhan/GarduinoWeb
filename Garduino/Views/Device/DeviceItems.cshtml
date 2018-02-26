@@ -17,7 +17,7 @@
                     }
                     else
                     {
-                        <span class="glyphicon glyphicon-play-circle text-danger" title="Device is not connected" style="margin-right: 2px"></span>
+                        <span id="state" class="glyphicon glyphicon-play-circle text-danger" title="Device is not connected" style="margin-right: 2px"></span>
                     }
                 }
                 @Html.DisplayFor(model => item.Name)
@@ -25,7 +25,7 @@
             <div class="col-md-6">
                 <div class="container-fluid text-center">
                     @{
-                        if (true)
+                        if (item.Alive)
                         {
                             if (!item.GlobalLock)
                             {

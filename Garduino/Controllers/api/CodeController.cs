@@ -63,7 +63,7 @@ namespace Garduino.Controllers.api
             Code code = _repository.GetLatest(dev);
             if (code == null) return null;
             if(invoke) {
-                await _hubContext.Clients.All.InvokeAsync("codeFetched", dev.Name,
+                await _hubContext.Clients.Group(GetUserName()).InvokeAsync("codeFetched", dev.Name,
                 string.IsNullOrWhiteSpace(code.ActionName) ? code.Action.ToString() : code.ActionName);
                 
             }
@@ -83,7 +83,7 @@ namespace Garduino.Controllers.api
             Code latest = await GetLatestCode(timeDevice.deviceId, false);
             if (latest == null) return NotFound();
             await _repository.CompleteAsync(latest, timeDevice.dateTime);
-            await _hubContext.Clients.All.InvokeAsync("codeDone", latest.Device.Name,
+            await _hubContext.Clients.Group(GetUserName()).InvokeAsync("codeDone", latest.Device.Name,
                 string.IsNullOrWhiteSpace(latest.ActionName) ? latest.Action.ToString() : latest.ActionName);
             return Ok();
         }
@@ -171,5 +171,7 @@ namespace Garduino.Controllers.api
             var device = await _GetDeviceAsync(deviceId.Value);
             return device ?? null;
         }
+
+        private string GetUserName() => User.Identity.Name;
     }
 }

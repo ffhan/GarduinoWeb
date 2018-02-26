@@ -109,7 +109,7 @@ namespace Garduino.Controllers.api
 
             Device dev = await _deviceRepository.GetAsync(measureDevice.deviceId);
             if (dev == null) return NotFound(measureDevice.deviceId);
-            await _hubContext.Clients.All.InvokeAsync("newEntry", dev.Name);
+            await _hubContext.Clients.Group(GetUserName()).InvokeAsync("newEntry", dev.Name);
             if(await _repository.AddAsync(measureDevice.measure, dev)) return Ok(
                 await _repository.GetAsync(measureDevice.measure.DateTime, dev));
             return BadRequest();
@@ -142,5 +142,7 @@ namespace Garduino.Controllers.api
             var device = await _GetDeviceAsync(deviceId.Value);
             return device ?? null;
         }
+
+        private string GetUserName() => User.Identity.Name;
     }
 }
