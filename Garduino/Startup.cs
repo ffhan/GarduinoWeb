@@ -1,13 +1,9 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
-using Garduino.Data.Migrations;
 using Garduino.Models;
 using Garduino.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using Garduino.Hubs;
 
 
 namespace Garduino
@@ -34,10 +31,13 @@ namespace Garduino
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthorization();
+            services.AddSignalR();
 
             services.AddMvcCore()
                 .AddAuthorization() // Note - this is on the IMvcBuilder, not the service collection
                 .AddJsonFormatters(options => options.ContractResolver = new CamelCasePropertyNamesContractResolver());
+
+            
 
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -81,6 +81,7 @@ namespace Garduino
                 });
 
             services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,6 +97,11 @@ namespace Garduino
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<DeviceHub>("hub/device");
+            });
 
             app.UseStaticFiles();
 

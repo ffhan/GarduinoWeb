@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
+using Garduino.Hubs;
 using Garduino.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
@@ -22,14 +24,14 @@ namespace Garduino.Controllers.api
     {
         private readonly IMeasureRepository _repository;
         private readonly IDeviceRepository _deviceRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<DeviceHub> _hubContext;
 
         public EntryController(IDeviceRepository deviceRepository, IMeasureRepository repository,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager, IHubContext<DeviceHub> hubContext)
         {
             _repository = repository;
             _deviceRepository = deviceRepository;
-            _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         // GET: api/Entry
@@ -107,6 +109,7 @@ namespace Garduino.Controllers.api
 
             Device dev = await _deviceRepository.GetAsync(measureDevice.deviceId);
             if (dev == null) return NotFound(measureDevice.deviceId);
+            await _hubContext.Clients.All.InvokeAsync("newEntry", dev.Name);
             if(await _repository.AddAsync(measureDevice.measure, dev)) return Ok(
                 await _repository.GetAsync(measureDevice.measure.DateTime, dev));
             return BadRequest();

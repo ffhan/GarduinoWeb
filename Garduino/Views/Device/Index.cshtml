@@ -6,17 +6,19 @@
 }
 
 @section Scripts
-    {
+{
     <script type="text/javascript">
-        $(document).ready(function(){
-            function refreshPartial(){
+        $(document).ready(function() {
+            function refreshPartial() {
                 //this will wait 3 seconds and then fire the load partial function
-                setTimeout(function(){
-                    loadPartialView();
-                    //recall this function so that it will continue to loop
-                    refreshPartial();
-                }, 3000);
+                setTimeout(function() {
+                        loadPartialView();
+                        //recall this function so that it will continue to loop
+                        refreshPartial();
+                    },
+                    3000);
             }
+
             //initialize the loop
             refreshPartial();
         });
@@ -27,8 +29,8 @@
                 type: 'post',
                 cache: false,
                 async: true,
-                data: { },
-                success: function(result){
+                data: {},
+                success: function(result) {
                     $('#devices').html(result);
                 },
                 error: function() {
@@ -38,7 +40,68 @@
         }
     </script>
 
+
+    <script src="~/lib/signalR/signalr-client-1.0.0-alpha2-final.js"></script>
+    @*
+        TODO: fix notification when disconnected.
+    *@
+
+    <script type="text/javascript">
+        var transport = signalR.TransportType.WebSockets;
+        var connection = new signalR.HubConnection(`https://${document.location.host}/hub/device`, { transport: transport });
+        var messageInput = document.getElementById('alerts');
+        connection.on('newEntry',
+            (name) => {
+                var liElement = document.createElement('div');
+                liElement.className = 'alert alert-info alert-dismissible';
+                liElement.role = 'alert';
+                liElement.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    'Device ' + name + ' added a new entry!';
+                document.getElementById('alerts').appendChild(liElement);
+            });
+        connection.on('updateState',
+            (name, message) => {
+                var liElement = document.createElement('div');
+                liElement.className = 'alert alert-danger alert-dismissible';
+                liElement.role = 'alert';
+                liElement.innerHTML =
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    'Device ' +
+                    name +
+                    ' ' +
+                    message;
+                document.getElementById('alerts').appendChild(liElement);
+            });
+        connection.on('codeFetched',
+            (name, codeName) => {
+                var liElement = document.createElement('div');
+                liElement.className = 'alert alert-warning alert-dismissible';
+                liElement.role = 'alert';
+                liElement.innerHTML =
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    'Device ' +
+                    name + ' is processing code ' + codeName + '...';
+                document.getElementById('alerts').appendChild(liElement);
+            });
+        connection.on('codeDone',
+            (name, codeName) => {
+                var liElement = document.createElement('div');
+                liElement.className = 'alert alert-success alert-dismissible';
+                liElement.role = 'alert';
+                liElement.innerHTML =
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    'Device ' +
+                    name +
+                    ' has completed code ' +
+                    codeName + '!';
+                document.getElementById('alerts').appendChild(liElement);
+            });
+        connection.start();
+    </script>
 }
+<div id="alerts">
+    
+</div>
 <div class="jumbotron">
     <div class="page-header">
         <h2>

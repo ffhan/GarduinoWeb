@@ -11,6 +11,7 @@ using GarduinoUniversal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
@@ -25,14 +26,12 @@ namespace Garduino.Controllers.front
          */
     {
         private readonly IDeviceRepository _repository;
-        private AppState _appState;
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public DeviceController(AppState appState, IUserRepository userRepository, 
             IDeviceRepository repository, UserManager<ApplicationUser> userManager)
         {
-            _appState = appState;
             _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;

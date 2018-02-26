@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
+using Garduino.Hubs;
 using Garduino.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Sockets;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
@@ -22,14 +25,16 @@ namespace Garduino.Controllers.api
     {
         private readonly ICodeRepository _repository;
         private readonly IDeviceRepository _deviceRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<DeviceHub> _hubContext;
+        //TODO: when transfering to ASP.NET just use _hubContext.Caller
 
         public CodeController(IDeviceRepository deviceRepository, ICodeRepository repository, 
-            UserManager<ApplicationUser> userManager)
+            IHubContext<DeviceHub> hubContext
+            )
         {
             _deviceRepository = deviceRepository;
             _repository = repository;
-            _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         // GET: api/Code
@@ -51,11 +56,18 @@ namespace Garduino.Controllers.api
         }
 
         [HttpGet("latest/{deviceId}")]
-        public async Task<Code> GetLatestCode([FromRoute] Guid deviceId)
+        public async Task<Code> GetLatestCode([FromRoute] Guid deviceId, bool invoke = true)
         {
             Device dev = await GetDeviceAsync(deviceId);
             if (dev == null) return null;
-            return _repository.GetLatest(dev);
+            Code code = _repository.GetLatest(dev);
+            if (code == null) return null;
+            if(invoke) {
+                await _hubContext.Clients.All.InvokeAsync("codeFetched", dev.Name,
+                string.IsNullOrWhiteSpace(code.ActionName) ? code.Action.ToString() : code.ActionName);
+                
+            }
+            return code;
         }
 
         public class TimeDevice
@@ -68,9 +80,11 @@ namespace Garduino.Controllers.api
         public async Task<IActionResult> CompleteCode([FromBody] TimeDevice timeDevice) //TODO: Complete & Fix.
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            Code latest = await GetLatestCode(timeDevice.deviceId);
+            Code latest = await GetLatestCode(timeDevice.deviceId, false);
             if (latest == null) return NotFound();
             await _repository.CompleteAsync(latest, timeDevice.dateTime);
+            await _hubContext.Clients.All.InvokeAsync("codeDone", latest.Device.Name,
+                string.IsNullOrWhiteSpace(latest.ActionName) ? latest.Action.ToString() : latest.ActionName);
             return Ok();
         }
 

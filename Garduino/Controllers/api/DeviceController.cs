@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
+using Garduino.Hubs;
 using Garduino.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garduino.Controllers.api
@@ -24,14 +26,16 @@ namespace Garduino.Controllers.api
     {
         private readonly IDeviceRepository _repository;
         private readonly IUserRepository _userRepository;
+        private readonly IHubContext<DeviceHub> _hubContext;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public DeviceController(IDeviceRepository repository, IUserRepository userRepository,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager, IHubContext<DeviceHub> hubContext)
         {
             _repository = repository;
             _userRepository = userRepository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         // GET: api/Device
@@ -124,8 +128,14 @@ namespace Garduino.Controllers.api
             Device dev = await _repository.GetAsync(id);
             if (dev == null) return NotFound();
             if (state == null) return BadRequest();
+            bool wasAlive = dev.Alive;
             dev.State = state.state;
             await _repository.UpdateAsync(id, dev);
+            if (wasAlive ^ dev.Alive)
+            {
+                await _hubContext.Clients.All.InvokeAsync("updateState", dev.Name,
+                    dev.Alive ? "has connected!" : "has died.");
+            }
             return Ok();
         }
 
