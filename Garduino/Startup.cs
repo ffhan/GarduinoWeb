@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Garduino.Hubs;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 namespace Garduino
@@ -98,16 +99,14 @@ namespace Garduino
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<DeviceHub>("hub/device");
-            });
-
             app.UseStaticFiles();
 
             app.UseAuthentication();
 
-
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<DeviceHub>("hub/device");
+            }); //USE BELOW AUTHENTIFICATION, OTHERWISE YOU CAN'T ACCESS USER IDENTITY FROM HUB CONTEXT.
 
             app.UseMvc(routes =>
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
@@ -19,11 +20,6 @@ namespace Garduino.Controllers.front
 {
     [Authorize]
     public class DeviceController : Controller
-        /*
-         * TODO: MEDIA CARDS FOR DEVICES INSTEAD OF TABLE
-         * TODO: IMPLEMENT ADDING CODES AND MEASURES DIRECTLY TO DEVICE
-         * TODO: ROUTE CODES AND MEASURES DIRECTLY TO Device/device_id/Entry or Code/
-         */
     {
         private readonly IDeviceRepository _repository;
         private readonly IUserRepository _userRepository;

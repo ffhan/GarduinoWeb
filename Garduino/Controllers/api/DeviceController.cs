@@ -133,7 +133,7 @@ namespace Garduino.Controllers.api
             await _repository.UpdateAsync(id, dev);
             if (wasAlive ^ dev.Alive)
             {
-                await _hubContext.Clients.All.InvokeAsync("updateState", dev.Name,
+                await _hubContext.Clients.Group(GetUserName()).InvokeAsync("updateState", dev.Name,
                     dev.Alive ? "has connected!" : "has died.");
             }
             return Ok();
@@ -150,5 +150,7 @@ namespace Garduino.Controllers.api
         }
 
         private IActionResult InternalServerError() => StatusCode(StatusCodes.Status500InternalServerError);
+
+        private string GetUserName() => User.Identity.Name;
     }
 }
