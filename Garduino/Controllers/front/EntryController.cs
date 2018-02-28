@@ -47,8 +47,8 @@ namespace Garduino.Controllers.front
 
             ChartJSCore.Models.Data data = new ChartJSCore.Models.Data();
             ChartJSCore.Models.Data data2 = new ChartJSCore.Models.Data();
-            data.Labels = measures.Select(g => g.DateTime.ToString("G")).ToList();
-            data2.Labels = measures.Select(g => g.DateTime.ToString("G")).ToList();
+            data.Labels = measures.Select(g => g.LocalDateTime.ToString("G")).ToList();
+            data2.Labels = measures.Select(g => g.LocalDateTime.ToString("G")).ToList();
 
             LineDataset dataset = new LineDataset()
             {//collection.Skip(Math.Max(0, collection.Count() - N));
