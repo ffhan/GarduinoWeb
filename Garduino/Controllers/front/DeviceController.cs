@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 //using System.Web.Mvc;
 using Garduino.Data;
 using Garduino.Data.Interfaces;
+using Garduino.Hubs;
 using Garduino.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
 
@@ -18,10 +21,13 @@ namespace Garduino.Controllers.front
         private readonly IDeviceRepository _repository;
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<DeviceHub> _hubContext;
 
         public DeviceController(AppState appState, IUserRepository userRepository, 
-            IDeviceRepository repository, UserManager<ApplicationUser> userManager)
+            IDeviceRepository repository, UserManager<ApplicationUser> userManager,
+            IHubContext<DeviceHub> hubContext)
         {
+            _hubContext = hubContext;
             _userRepository = userRepository;
             _repository = repository;
             _userManager = userManager;
@@ -140,7 +146,7 @@ namespace Garduino.Controllers.front
         {
 
             var devices = _repository.GetAll(await GetCurrentUserAsync());
-            ModelState.Clear();
+            //ModelState.Clear();
             return PartialView("DeviceItems", devices);
         }
 

@@ -49,10 +49,10 @@ namespace Garduino
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IMeasureRepository, EntryRepository>();
-            services.AddTransient<ICodeRepository, CodeRepository>();
-            services.AddTransient<IDeviceRepository, DeviceRepository>();
-            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddScoped<IMeasureRepository, EntryRepository>();
+            services.AddScoped<ICodeRepository, CodeRepository>();
+            services.AddScoped<IDeviceRepository, DeviceRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<AppState>();

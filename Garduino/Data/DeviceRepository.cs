@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Garduino.Data.Interfaces;
@@ -19,6 +20,13 @@ namespace Garduino.Data
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<DeviceHub> _hubContext;
         private readonly UserManager<ApplicationUser> _userManager;
+
+        public void AliveEvent(object sender, PropertyChangedEventArgs p)
+        {
+            var dev = (Device) sender;
+            _hubContext.Clients.Group(dev.User.Name).InvokeAsync("updateState", dev.Name, dev.Alive ? "has connected!" : "has died.");
+            //var done = UpdateAsync(dev.Id, dev);
+        }
 
         public DeviceRepository(IHubContext<DeviceHub> hubContext,
             ApplicationDbContext context, UserManager<ApplicationUser> userManager)
@@ -46,29 +54,46 @@ namespace Garduino.Data
 
         public IEnumerable<Device> GetAll(User user)
         {
-            return _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).Where(g => g.IsUser(user));
+            var devices = _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).Where(g => g.IsUser(user)).ToList();
+            foreach (Device device in devices)
+            {
+                device.PropertyChanged += AliveEvent;
+                device.SetAlive();
+                _context.Entry(device).State = EntityState.Modified;
+            }
+            _context.SaveChanges();
+            return devices;
         }
 
-        public async Task<Device> GetAsync(string name, User user) =>
-            user.Devices.FirstOrDefault(g => StringOperations.IsFromDevice(g.Name, name));
+        public async Task<Device> GetAsync(string name, User user)
+        {
+            var device = user.Devices.FirstOrDefault(g => StringOperations.IsFromDevice(g.Name, name));
+            if (device == null) return null;
+            device.PropertyChanged += AliveEvent;
+            device.SetAlive();
+            _context.Entry(device).State = EntityState.Modified;
+            _context.SaveChanges();
+            return device;
+        }
+            
 
         public async Task<bool> DeviceExistsAsync(string device, User user)
         {
             return await _context.Device.AnyAsync(g => g.IsUser(user) && StringOperations.IsFromDevice(g.Name, device));
         }
 
-        public async Task<Device> GetAsync(Guid id) => 
-            await _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).FirstOrDefaultAsync(g => g.Id.Equals(id));
+        public async Task<Device> GetAsync(Guid id)
+        {
+            var device = await _context.Device.Include(c => c.User).Include(c => c.Measures).Include(c => c.Codes).FirstOrDefaultAsync(g => g.Id.Equals(id));
+            device.PropertyChanged += AliveEvent;
+            return device;
+        }
+            
 
         public async Task<bool> UpdateAsync(Guid id, Device what)
         {
             var device = await GetAsync(id);
             if (device is null) return false;
-
-            if (device.Alive ^ what.Alive)
-                await _hubContext.Clients.Group((await _userManager.Users.FirstOrDefaultAsync(
-                    g => g.Id.Equals(device.User.Id))).UserName).InvokeAsync(device.Name,
-                    what.Alive ? "has connected!" : "has died.");
 
             device.Update(what);
             _context.Entry(device).State = EntityState.Modified;

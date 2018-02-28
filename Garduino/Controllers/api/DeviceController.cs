@@ -131,11 +131,12 @@ namespace Garduino.Controllers.api
             bool wasAlive = dev.Alive;
             dev.State = state.state;
             await _repository.UpdateAsync(id, dev);
+            /*
             if (wasAlive ^ dev.Alive)
             {
                 await _hubContext.Clients.Group(GetUserName()).InvokeAsync("updateState", dev.Name,
                     dev.Alive ? "has connected!" : "has died.");
-            }
+            }*/
             return Ok();
         }
 

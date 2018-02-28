@@ -26,6 +26,9 @@ namespace Garduino.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+
+            //builder.Entity<Device>().Property(b => b.Alive).HasField("_alive");
+
         }
         
         public DbSet<Garduino.Models.Measure> Measure { get; set; }

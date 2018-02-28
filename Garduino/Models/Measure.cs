@@ -60,7 +60,7 @@ namespace Garduino.Models
            try
            {
                return other != null &&
-                      DateTime.Equals(other.DateTime) && IsFromDevice(other.Device.Name);
+                      DateTime.Equals(other.DateTime) && IsFromDevice(other.Device?.Name);
            }
            catch (Exception e)
            {
@@ -76,26 +76,6 @@ namespace Garduino.Models
             AirHumidity = measure.AirHumidity;
             AirTemperature = measure.AirTemperature;
             LightState = measure.LightState;
-        }
-
-        
-
-        public static bool operator ==(Measure measure1, Measure measure2)
-        {
-            try
-            {
-                if (measure1 is null) return false;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-            return measure1.Equals(measure2);
-        }
-
-        public static bool operator !=(Measure measure1, Measure measure2)
-        {
-            return !(measure1 == measure2);
         }
 
         public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);

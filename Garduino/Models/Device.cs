@@ -9,13 +9,13 @@ using GarduinoUniversal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 
 namespace Garduino.Models
 {
-    public class Device : IDeviceModel
+    public class Device : IDeviceModel, INotifyPropertyChanged
     {
-
         [Key]
         [DisplayName("ID")]
         public Guid Id { get; set; }
@@ -73,23 +73,61 @@ namespace Garduino.Models
         public void Update(Device code)
         {
             Name = code.Name;
+            //_alive = code.Alive;
+            SetAlive();
+            
             if (code.State != 0)
             {
                 State = code.State;
                 LastSign = DateTime.UtcNow;
+                //SetAlive();
             }
         }
 
         [DisplayName("Time since last call")]
         public TimeSpan TimeSinceSign => (DateTime.UtcNow - LastSign);
 
-        [DisplayName("Is alive?")]
-        public bool Alive => TimeSinceSign.TotalMinutes <= 2;
+        public bool _alive { get; set; }
 
-        public void Notify(IHubContext<DeviceHub> hub)
+        [DisplayName("Is alive?")]
+        public bool Alive
         {
-            hub.Clients.Group(User.Name).InvokeAsync("updateState", Name, Alive ? "has connected!" : "has died.");
+            get
+            {
+                bool isAl = IsAlive();
+                if (_alive && !isAl)
+                {
+                    
+                }
+                if (_alive != isAl)
+                {
+                    _alive = isAl;
+                    OnPropertyChanged(); //TODO: see https://msdn.microsoft.com/en-us/library/xwbwks95(v=vs.100).aspx
+                }
+                return _alive;
+            }
         }
+
+        public void SetAlive()
+        {
+            var b = Alive;
+        }
+
+        protected void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, e);
+        }
+
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        
+
+        private bool IsAlive() => TimeSinceSign.TotalMinutes < 2;
 
         public void SetUser(User user) => User = user;
 
