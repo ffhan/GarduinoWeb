@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Garduino.Hubs
 {
-    [Authorize]
     public class DeviceHub : Hub
     {
 

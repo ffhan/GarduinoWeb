@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Garduino.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 
 namespace Garduino
@@ -33,6 +34,20 @@ namespace Garduino
         {
             services.AddAuthorization();
             services.AddSignalR();
+            // ********************
+            // Setup CORS
+            // ********************
+            var corsBuilder = new CorsPolicyBuilder();
+            corsBuilder.AllowAnyHeader();
+            corsBuilder.AllowAnyMethod();
+            corsBuilder.AllowAnyOrigin(); // For anyone access.
+            //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
+            corsBuilder.AllowCredentials();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
+            });
 
             services.AddMvcCore()
                 .AddAuthorization() // Note - this is on the IMvcBuilder, not the service collection
@@ -97,6 +112,7 @@ namespace Garduino
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseCors("SiteCorsPolicy");
             }
 
             app.UseStaticFiles();
