@@ -140,6 +140,11 @@ namespace Garduino.Controllers.api
             return Ok();
         }
 
+        [HttpGet("api/time")]
+        public async Task<IActionResult> GetTime()
+        {
+            return Ok((await GetCurrentUserAsync()).GetUserTime());
+        }
 
         private async Task<string> _GetCurrentUserIdAsync() =>
             (await _userManager.Users.FirstOrDefaultAsync(g => g.Email.Equals(User.FindFirst(ClaimTypes.NameIdentifier).Value)))?.Id;

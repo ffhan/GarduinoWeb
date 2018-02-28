@@ -1,4 +1,4 @@
-﻿@model Garduino.Models.Measure
+﻿@model Garduino.Models.Entry
 
 @{
     ViewData["Title"] = "Delete";
@@ -13,10 +13,10 @@
     <hr/>
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.DateTime)
+            @Html.DisplayNameFor(model => model.LocalDateTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DateTime)
+            @Html.DisplayFor(model => model.LocalDateTime)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.SoilMoisture)

@@ -25,13 +25,19 @@ namespace Garduino.Models
         [DefaultValue("No name")]
         public string ActionName { get; set; }
 
-        [DisplayName("Date arrived")]
+        [DisplayName("UTC date & time arrived")]
         public DateTime DateArrived { get; set; }
 
-        [DisplayName("Date completed")]
+        [DisplayName("Local date & time arrived")]
+        public DateTime LocalDateArrived => Device.User.ConvertTime(DateArrived);
+
+        [DisplayName("UTC date & time completed")]
         public DateTime DateCompleted { get; set; }
 
-        [DisplayName("Date executed")]
+        [DisplayName("Local date & time completed")]
+        public DateTime LocalDateCompleted => Device.User.ConvertTime(DateCompleted);
+
+        [DisplayName("Date & time executed")]
         public DateTime DateExecuted { get; set; }
 
         [DisplayName("Is it completed?")]

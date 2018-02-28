@@ -61,12 +61,12 @@ namespace Garduino.Data
 
         public async Task<Code> GetAsync(Guid id)
         {
-            return await _context.Code.Include(c => c.Device).FirstOrDefaultAsync(g => g.Id.Equals(id));
+            return await _context.Code.Include(c => c.Device).Include(c => c.Device.User).FirstOrDefaultAsync(g => g.Id.Equals(id));
         }
 
         public async Task<Code> GetAsync(Code what)
         {//TODO: SWITCH TO STRINGOPERATIONS
-            return await _context.Code.Include(c => c.Device).FirstOrDefaultAsync(g => g.Equals(what));
+            return await _context.Code.Include(c => c.Device).Include(c => c.Device.User).FirstOrDefaultAsync(g => g.Equals(what));
         }
 
         /*

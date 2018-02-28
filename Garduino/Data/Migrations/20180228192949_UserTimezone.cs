@@ -4,22 +4,21 @@ using System.Collections.Generic;
 
 namespace Garduino.Data.Migrations
 {
-    public partial class EntryDeviceName : Migration
+    public partial class UserTimezone : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "DeviceName",
-                table: "Entry",
-                nullable: false,
-                defaultValue: "");
+                name: "TimeZone",
+                table: "User",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "DeviceName",
-                table: "Entry");
+                name: "TimeZone",
+                table: "User");
         }
     }
 }

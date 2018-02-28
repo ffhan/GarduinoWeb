@@ -21,7 +21,7 @@ namespace Garduino.Data.Migrations
                 table: "AspNetRoles");
 
             migrationBuilder.CreateTable(
-                name: "Measure",
+                name: "Entry",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -67,7 +67,7 @@ namespace Garduino.Data.Migrations
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Measure");
+                name: "Entry");
 
             migrationBuilder.DropIndex(
                 name: "UserNameIndex",

@@ -36,7 +36,7 @@ namespace Garduino.Controllers.api
 
         // GET: api/Entry
         [HttpGet("{deviceId}")]
-        public async Task<IEnumerable<Measure>> GetMeasure([FromRoute] Guid deviceId)
+        public async Task<IEnumerable<Entry>> GetMeasure([FromRoute] Guid deviceId)
         {
             Device dev = await GetDeviceAsync(deviceId);
             if (dev == null) return null;
@@ -72,30 +72,30 @@ namespace Garduino.Controllers.api
 
 
         [HttpPut]
-        public async Task<IActionResult> PutMeasure([FromBody] Measure measure)
+        public async Task<IActionResult> PutMeasure([FromBody] Entry entry)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Measure mes = await _repository.GetAsync(measure.Id);
+            Entry mes = await _repository.GetAsync(entry.Id);
 
-            if (!await _repository.UpdateAsync(mes.Id, measure)) return NoContent();
+            if (!await _repository.UpdateAsync(mes.Id, entry)) return NoContent();
             return Ok();
         }
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMeasure([FromRoute] Guid id, [FromBody] Measure measure)
+        public async Task<IActionResult> PutMeasure([FromRoute] Guid id, [FromBody] Entry entry)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (!await _repository.UpdateAsync(id, measure)) return NoContent();
+            if (!await _repository.UpdateAsync(id, entry)) return NoContent();
             return Ok();
         }
 
         public class MeasureDevice
         {
             public Guid deviceId { get; set; }
-            public Measure measure { get; set; }
+            public Entry Entry { get; set; }
         }
 
         // POST: api/Entry
@@ -110,8 +110,8 @@ namespace Garduino.Controllers.api
             Device dev = await _deviceRepository.GetAsync(measureDevice.deviceId);
             if (dev == null) return NotFound(measureDevice.deviceId);
             await _hubContext.Clients.Group(GetUserName()).InvokeAsync("newEntry", dev.Name);
-            if(await _repository.AddAsync(measureDevice.measure, dev)) return Ok(
-                await _repository.GetAsync(measureDevice.measure.DateTime, dev));
+            if(await _repository.AddAsync(measureDevice.Entry, dev)) return Ok(
+                await _repository.GetAsync(measureDevice.Entry.DateTime, dev));
             return BadRequest();
         }
 

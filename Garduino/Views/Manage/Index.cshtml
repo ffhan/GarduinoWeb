@@ -1,4 +1,5 @@
-﻿@model IndexViewModel
+﻿@using Garduino.Models.ManageViewModels
+@model Garduino.Models.ManageViewModels.IndexViewModel
 @{
     ViewData["Title"] = "Profile";
     ViewData.AddActivePage(ManageNavPages.Index);
@@ -35,6 +36,11 @@
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="User.TimeZone"></label>
+                <select class="form-control" asp-for="User.TimeZone" asp-items="Model.TimeZones"></select>
+            </div>
+            
             <button type="submit" class="btn btn-default">Save</button>
         </form>
     </div>

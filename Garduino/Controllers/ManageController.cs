@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Garduino.Data.Interfaces;
 using Garduino.Extensions;
 using Garduino.Models;
 using Garduino.Models.ManageViewModels;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
 namespace Garduino.Controllers
@@ -19,6 +21,8 @@ namespace Garduino.Controllers
     [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
+        private readonly IUserRepository _userRepository;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -32,8 +36,10 @@ namespace Garduino.Controllers
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          UrlEncoder urlEncoder,
+          IUserRepository userRepository)
         {
+            _userRepository = userRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -53,13 +59,22 @@ namespace Garduino.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            var timezones = TimeZoneInfo.GetSystemTimeZones();
+            var user2 = await _userRepository.GetAsync((await _userManager.GetUserAsync(User)).Id);
             var model = new IndexViewModel
             {
                 Username = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
-                StatusMessage = StatusMessage
+                StatusMessage = StatusMessage,
+                TimeZones = timezones.Select(g => new SelectListItem
+                {
+                    Text = g.DisplayName,
+                    Value = g.Id,
+                    Selected = g.Id == user2.TimeZone
+                }).ToArray(),
+                User = user2
             };
 
             return View(model);
@@ -101,6 +116,9 @@ namespace Garduino.Controllers
             }
 
             StatusMessage = "Your profile has been updated";
+            var user2 = await _userRepository.GetAsync((await _userManager.GetUserAsync(User)).Id);
+            user2.TimeZone = model.User.TimeZone;
+            await _userRepository.UpdateAsync(user2);
             return RedirectToAction(nameof(Index));
         }
 
@@ -114,6 +132,7 @@ namespace Garduino.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");

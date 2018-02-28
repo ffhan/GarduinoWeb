@@ -18,14 +18,14 @@ namespace Garduino.Data
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Measure measure, Device device)
+        public async Task<bool> AddAsync(Entry entry, Device device)
         {
-            bool tmp = await IsContainedAsync(measure, device);
-            measure.SetDevice(device);
+            bool tmp = await IsContainedAsync(entry, device);
+            entry.SetDevice(device);
             if (tmp) return false;
             try
             {
-                _context.Measure.Add(measure);
+                _context.Measure.Add(entry);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
@@ -35,33 +35,33 @@ namespace Garduino.Data
             return true;
         }
 
-        public IEnumerable<Measure> GetAll(Device device)
+        public IEnumerable<Entry> GetAll(Device device)
         {
             return device.Measures?.OrderByDescending(g => g.DateTime);
         }
 
-        public async Task<Measure> GetAsync(Guid id)
+        public async Task<Entry> GetAsync(Guid id)
         {
-            return await _context.Measure.Include(c => c.Device).FirstOrDefaultAsync(g => g.Id.Equals(id));
+            return await _context.Measure.Include(c => c.Device).Include(c => c.Device.User).FirstOrDefaultAsync(g => g.Id.Equals(id));
         }
 
-        public async Task<Measure> GetAsync(DateTime dateTime, Device device)
+        public async Task<Entry> GetAsync(DateTime dateTime, Device device)
         {
             return device.Measures?.FirstOrDefault(g => g.DateTime.Equals(dateTime));
         }
 
-        public async Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device)
+        public async Task<IEnumerable<Entry>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device)
         {
             return device.Measures?.Where(m => m.DateTime.CompareTo(dateTime1) >= 0 && m.DateTime.CompareTo(dateTime2) <= 0);
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Measure measure)
+        public async Task<bool> UpdateAsync(Guid id, Entry entry)
         {
-            Measure mes = await GetAsync(id);
+            Entry mes = await GetAsync(id);
             if (mes is null) return false;
             try
             {
-                mes.Update(measure);
+                mes.Update(entry);
                 _context.Entry(mes).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
@@ -72,10 +72,10 @@ namespace Garduino.Data
             return true;
         }
 
-        public async Task<bool> IsContainedAsync(Measure measure, Device device)
+        public async Task<bool> IsContainedAsync(Entry entry, Device device)
         {
             if (device.Measures == null) return false;
-            return device.Measures.Any(g => g.EqualsEf(measure));
+            return device.Measures.Any(g => g.EqualsEf(entry));
         }
 
         public async Task<bool> IsContainedAsync(Guid id, Device device)
@@ -93,7 +93,7 @@ namespace Garduino.Data
         {
             try
             {
-                Measure mes = await GetAsync(id);
+                Entry mes = await GetAsync(id);
                 if (mes == null) return false;
                 _context.Measure.Remove(mes);
                 await _context.SaveChangesAsync();
@@ -105,7 +105,7 @@ namespace Garduino.Data
             return true;
         }
 
-        public bool AreEqual(Measure m1, Measure m2)
+        public bool AreEqual(Entry m1, Entry m2)
         {
             return m1.Equals(m2);
         }
@@ -114,7 +114,7 @@ namespace Garduino.Data
         {
             try
             {
-                await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Measure");
+                await _context.Database.ExecuteSqlCommandAsync("TRUNCATE TABLE Entry");
             }
             catch (DbUpdateException)
             {
@@ -124,12 +124,12 @@ namespace Garduino.Data
             return true;
         }
 
-        public Measure GetLatest(Device device)
+        public Entry GetLatest(Device device)
         {
             return GetAll(device).FirstOrDefault();
         }
 
-        public async Task AddAllAsync(ISet<Measure> all, Device device)
+        public async Task AddAllAsync(ISet<Entry> all, Device device)
         {
             foreach (var measure in all)
             {

@@ -30,7 +30,7 @@ namespace Garduino.Models
         public virtual User User { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Measure> Measures { get; set; }
+        public virtual ICollection<Entry> Measures { get; set; }
         [JsonIgnore]
         public virtual ICollection<Code> Codes { get; set; }
 
@@ -67,8 +67,13 @@ namespace Garduino.Models
         [DisplayName("Code count")]
         public int CodeCount => Codes?.Count ?? 0;
 
-        [DisplayName("Last time seen")]
+        [DisplayName("Last time (UTC) seen")]
         public DateTime LastSign { get; set; }
+
+        [DisplayName("Last time (local) seen")]
+        public DateTime LocalLastSign => User.ConvertTime(LastSign);
+
+
 
         public void Update(Device code)
         {
@@ -80,6 +85,7 @@ namespace Garduino.Models
             {
                 State = code.State;
                 LastSign = DateTime.UtcNow;
+                
                 //SetAlive();
             }
         }

@@ -5,12 +5,12 @@ using Garduino.Models;
 
 namespace Garduino.Data.Interfaces
 {
-    public interface IMeasureRepository : IBaseRepository<Measure, Device>, IDeviceable<Measure>, ITimeable<Measure, Device>
+    public interface IMeasureRepository : IBaseRepository<Entry, Device>, IDeviceable<Entry>, ITimeable<Entry, Device>
     {
         
-        Task<Measure> GetAsync(DateTime dateTime, Device device);
-        Task<IEnumerable<Measure>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device);
-        bool AreEqual(Measure m1, Measure m2);
+        Task<Entry> GetAsync(DateTime dateTime, Device device);
+        Task<IEnumerable<Entry>> GetRangeAsync(DateTime dateTime1, DateTime dateTime2, Device device);
+        bool AreEqual(Entry m1, Entry m2);
         
     }
 }

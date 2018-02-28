@@ -2,7 +2,7 @@
 
 namespace Garduino.Models
 {
-    public interface IMeasureModel : IBaseModel<Measure>, ICriticalOrdering<Measure>, IDeviceableModel
+    public interface IMeasureModel : IBaseModel<Entry>, ICriticalOrdering<Entry>, IDeviceableModel
     {
 
 

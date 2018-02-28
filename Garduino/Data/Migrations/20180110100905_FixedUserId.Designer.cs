@@ -115,7 +115,7 @@ namespace Garduino.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Measure");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

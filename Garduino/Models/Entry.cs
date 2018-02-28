@@ -8,16 +8,20 @@ using Newtonsoft.Json;
 
 namespace Garduino.Models
 {// TODO: Add device name
-    public class Measure : IMeasureModel
+    public class Entry : IMeasureModel
     {
 
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        [DisplayName("Time stamp")]
+        [DisplayName("UTC Time stamp")]
         //[DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateTime { get; set; }
+
+        [DisplayName("Local time stamp")]
+        public DateTime LocalDateTime => Device.User.ConvertTime(DateTime);
+
         [Required]
         [DisplayName("Soil moisture")]
         public int SoilMoisture { get; set; }
@@ -39,23 +43,23 @@ namespace Garduino.Models
         public virtual Device Device { get; set; }
 
 
-        public bool EqualsEf(Measure measure)
+        public bool EqualsEf(Entry entry)
         {
-           return Equals(measure);
+           return Equals(entry);
         }
 
-        public int CompareTo(Measure other)
+        public int CompareTo(Entry other)
         {
             return DateTime.CompareTo(other.DateTime);
         }
 
         public override bool Equals(object obj)
         {
-           return Equals(obj as Measure);
+           return Equals(obj as Entry);
         }
         
 
-        public bool Equals(Measure other)
+        public bool Equals(Entry other)
         {
            try
            {
@@ -69,13 +73,13 @@ namespace Garduino.Models
 
         }
 
-        public void Update(Measure measure) //TODO: Update only if field not null.
+        public void Update(Entry entry) //TODO: Update only if field not null.
         {
-            SoilMoisture = measure.SoilMoisture;
-            SoilDescription = measure.SoilDescription;
-            AirHumidity = measure.AirHumidity;
-            AirTemperature = measure.AirTemperature;
-            LightState = measure.LightState;
+            SoilMoisture = entry.SoilMoisture;
+            SoilDescription = entry.SoilDescription;
+            AirHumidity = entry.AirHumidity;
+            AirTemperature = entry.AirTemperature;
+            LightState = entry.LightState;
         }
 
         public bool IsFromDevice(string device) => StringOperations.IsFromDevice(Device.Name, device);

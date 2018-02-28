@@ -1,6 +1,6 @@
 ﻿@using System.Collections
 @using Chart = ChartJSCore.Models.Chart
-@model IEnumerable<Garduino.Models.Measure>
+@model IEnumerable<Garduino.Models.Entry>
 
 @{
     ViewData["Title"] = "Device Entries";
@@ -31,7 +31,7 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.DateTime)
+                        @Html.DisplayNameFor(model => model.LocalDateTime)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.SoilMoisture)
@@ -58,7 +58,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.DateTime)
+                                @Html.DisplayFor(modelItem => item.LocalDateTime)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.SoilMoisture)

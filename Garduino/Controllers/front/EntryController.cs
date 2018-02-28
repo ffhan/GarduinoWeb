@@ -37,7 +37,7 @@ namespace Garduino.Controllers.front
             _userManager = userManager;
         }
 
-        public async Task<IList<ChartJSCore.Models.Chart>> CreateCharts(IEnumerable<Measure> measures)
+        public async Task<IList<ChartJSCore.Models.Chart>> CreateCharts(IEnumerable<Entry> measures)
         {
             ChartJSCore.Models.Chart soilM = new ChartJSCore.Models.Chart();
             ChartJSCore.Models.Chart air = new ChartJSCore.Models.Chart();
@@ -135,7 +135,7 @@ namespace Garduino.Controllers.front
         // GET: Entry
         public async Task<IActionResult> Index(Guid deviceId)
         {
-            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(deviceId)).Reverse();
+            IEnumerable<Entry> measures = _repository.GetAll(await GetDeviceAsync(deviceId)).Reverse();
 
             IList<ChartJSCore.Models.Chart> charts = await CreateCharts(measures);
 
@@ -150,10 +150,10 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Details(Guid? id)
         { 
             if (!id.HasValue) return NotFound();
-            Measure measure = await _repository.GetAsync(id.Value);
-            Guid deviceId = measure.Device.Id;
+            Entry entry = await _repository.GetAsync(id.Value);
+            Guid deviceId = entry.Device.Id;
             ViewData[GarduinoConstants.DeviceId] = deviceId;
-            return View(measure);
+            return View(entry);
         }
 
         // GET: Entry/Create
@@ -168,10 +168,10 @@ namespace Garduino.Controllers.front
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid deviceId, [Bind("Id, DateTime,SoilMoisture,SoilDescription,AirHumidity,AirTemperature,LightState,DeviceName")] Measure measure)
+        public async Task<IActionResult> Create(Guid deviceId, [Bind("Id, DateTime,SoilMoisture,SoilDescription,AirHumidity,AirTemperature,LightState,DeviceName")] Entry entry)
         {
-            if (!ModelState.IsValid) return View(measure);
-            await _repository.AddAsync(measure, await GetDeviceAsync(deviceId));
+            if (!ModelState.IsValid) return View(entry);
+            await _repository.AddAsync(entry, await GetDeviceAsync(deviceId));
             return RedirectToAction(nameof(Index), new { deviceId });
         }
 
@@ -179,11 +179,11 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            Measure measure = await _repository.GetAsync(id.Value);
-            if (measure == null) return NotFound();
+            Entry entry = await _repository.GetAsync(id.Value);
+            if (entry == null) return NotFound();
             Guid deviceId = await GetDeviceId(id.Value);
             ViewData["deviceId"] = deviceId;
-            return View(measure);
+            return View(entry);
         }
 
         // POST: Entry/Edit/5
@@ -191,17 +191,17 @@ namespace Garduino.Controllers.front
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id, DateTime,SoilMoisture,SoilDescription,AirHumidity,AirTemperature,LightState,DeviceName")] Measure measure)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id, DateTime,SoilMoisture,SoilDescription,AirHumidity,AirTemperature,LightState,DeviceName")] Entry entry)
         {
-            if (id != measure.Id) return NotFound();
-            if (!ModelState.IsValid) return View(measure);
+            if (id != entry.Id) return NotFound();
+            if (!ModelState.IsValid) return View(entry);
             try
             {
-                await _repository.UpdateAsync(id, measure);
+                await _repository.UpdateAsync(id, entry);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await MeasureExists(measure.Id))
+                if (!await MeasureExists(entry.Id))
                 {
                     return NotFound();
                 }
@@ -215,11 +215,11 @@ namespace Garduino.Controllers.front
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null) return NotFound();
-            Measure measure = await _repository.GetAsync(id.Value);
-            if (measure == null) return NotFound();
-            Guid deviceId = measure.Device.Id;
+            Entry entry = await _repository.GetAsync(id.Value);
+            if (entry == null) return NotFound();
+            Guid deviceId = entry.Device.Id;
             ViewData["deviceId"] = deviceId;
-            return View(measure);
+            return View(entry);
         }
 
         // POST: Entry/Delete/5
@@ -240,7 +240,7 @@ namespace Garduino.Controllers.front
         [HttpPost]
         public async Task<PartialViewResult> GetCharts([FromBody] AjaxPost ajaxPost)
         {
-            IEnumerable<Measure> measures = _repository.GetAll(await GetDeviceAsync(ajaxPost.DeviceId));
+            IEnumerable<Entry> measures = _repository.GetAll(await GetDeviceAsync(ajaxPost.DeviceId));
             IList<ChartJSCore.Models.Chart> charts = await CreateCharts(measures);
             return PartialView("Graphs", charts);
         }

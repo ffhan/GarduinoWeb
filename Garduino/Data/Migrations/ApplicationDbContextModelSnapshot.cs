@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace Garduino.Data.Migrations
@@ -118,7 +120,7 @@ namespace Garduino.Data.Migrations
                     b.ToTable("Device");
                 });
 
-            modelBuilder.Entity("Garduino.Models.Measure", b =>
+            modelBuilder.Entity("Garduino.Models.Entry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -141,7 +143,7 @@ namespace Garduino.Data.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Measure");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("Garduino.Models.User", b =>
@@ -150,6 +152,8 @@ namespace Garduino.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("TimeZone");
 
                     b.HasKey("Id");
 
@@ -278,7 +282,7 @@ namespace Garduino.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Garduino.Models.Measure", b =>
+            modelBuilder.Entity("Garduino.Models.Entry", b =>
                 {
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Measures")

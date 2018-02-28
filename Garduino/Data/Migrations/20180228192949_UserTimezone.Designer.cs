@@ -11,8 +11,8 @@ using System;
 namespace Garduino.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180212234012_Revision1")]
-    partial class Revision1
+    [Migration("20180228192949_UserTimezone")]
+    partial class UserTimezone
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,10 +103,16 @@ namespace Garduino.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("LastSign");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int>("State");
+
                     b.Property<string>("UserId");
+
+                    b.Property<bool>("_alive");
 
                     b.HasKey("Id");
 
@@ -145,6 +151,10 @@ namespace Garduino.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("TimeZone");
 
                     b.HasKey("Id");
 

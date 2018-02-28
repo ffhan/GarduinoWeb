@@ -14,7 +14,7 @@
                 @Html.DisplayNameFor(model => model.ActionName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateArrived)
+                @Html.DisplayNameFor(model => model.LocalDateArrived)
             </th>
             <th></th>
         </tr>
@@ -30,7 +30,7 @@
                     @Html.DisplayFor(modelItem => item.ActionName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DateArrived)
+                    @Html.DisplayFor(modelItem => item.LocalDateArrived)
                 </td>
                 <td>
                     @Html.Partial("TableLinks", item)

@@ -99,7 +99,7 @@ namespace Garduino.Data.Migrations
                     b.ToTable("Code");
                 });
 
-            modelBuilder.Entity("Garduino.Models.Measure", b =>
+            modelBuilder.Entity("Garduino.Models.Entry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -123,7 +123,7 @@ namespace Garduino.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Measure");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

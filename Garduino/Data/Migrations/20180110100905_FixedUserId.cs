@@ -19,7 +19,7 @@ namespace Garduino.Data.Migrations
         {
             migrationBuilder.AlterColumn<Guid>(
                 name: "UserId",
-                table: "Measure",
+                table: "Entry",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldNullable: true);

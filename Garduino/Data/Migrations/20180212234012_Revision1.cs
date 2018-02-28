@@ -14,7 +14,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "DeviceName",
-                table: "Measure");
+                table: "Entry");
 
             migrationBuilder.DropColumn(
                 name: "DeviceName",
@@ -71,7 +71,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "DeviceName",
-                table: "Measure",
+                table: "Entry",
                 nullable: false,
                 defaultValue: "");
 

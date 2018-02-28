@@ -11,7 +11,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.AddColumn<Guid>(
                 name: "DeviceId",
-                table: "Measure",
+                table: "Entry",
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
@@ -40,7 +40,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Measure_DeviceId",
-                table: "Measure",
+                table: "Entry",
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
@@ -63,7 +63,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Measure_Device_DeviceId",
-                table: "Measure",
+                table: "Entry",
                 column: "DeviceId",
                 principalTable: "Device",
                 principalColumn: "Id",
@@ -78,14 +78,14 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Measure_Device_DeviceId",
-                table: "Measure");
+                table: "Entry");
 
             migrationBuilder.DropTable(
                 name: "Device");
 
             migrationBuilder.DropIndex(
                 name: "IX_Measure_DeviceId",
-                table: "Measure");
+                table: "Entry");
 
             migrationBuilder.DropIndex(
                 name: "IX_Code_DeviceId",
@@ -93,7 +93,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "DeviceId",
-                table: "Measure");
+                table: "Entry");
 
             migrationBuilder.DropColumn(
                 name: "DeviceId",
@@ -101,7 +101,7 @@ namespace Garduino.Data.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "UserId",
-                table: "Measure",
+                table: "Entry",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(

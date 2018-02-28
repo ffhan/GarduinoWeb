@@ -119,7 +119,7 @@ namespace Garduino.Data.Migrations
                     b.ToTable("Device");
                 });
 
-            modelBuilder.Entity("Garduino.Models.Measure", b =>
+            modelBuilder.Entity("Garduino.Models.Entry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -142,7 +142,7 @@ namespace Garduino.Data.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Measure");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("Garduino.Models.User", b =>
@@ -279,7 +279,7 @@ namespace Garduino.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Garduino.Models.Measure", b =>
+            modelBuilder.Entity("Garduino.Models.Entry", b =>
                 {
                     b.HasOne("Garduino.Models.Device", "Device")
                         .WithMany("Measures")

@@ -10,7 +10,7 @@ namespace Garduino.Data.Migrations
         {
             migrationBuilder.AddColumn<Guid>(
                 name: "UserId",
-                table: "Measure",
+                table: "Entry",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
@@ -25,7 +25,7 @@ namespace Garduino.Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "UserId",
-                table: "Measure");
+                table: "Entry");
 
             migrationBuilder.DropColumn(
                 name: "UserId",

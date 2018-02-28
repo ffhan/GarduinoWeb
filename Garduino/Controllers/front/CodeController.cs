@@ -287,7 +287,7 @@ namespace Garduino.Controllers.front
         }
         public async Task<IActionResult> CreateMeasure(Guid deviceId)
         {
-            Code code = new Code(5, "Measure");
+            Code code = new Code(5, "Entry");
             return await CreateExisting(code, deviceId);
         }
         public async Task<IActionResult> CreatePrintTime(Guid deviceId)
